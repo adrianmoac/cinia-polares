@@ -1,11 +1,10 @@
-import Login from "../Login"
-import App from "./App";
+import HomeWrapper from "../Home";
 
 export const loggedRoutes = [
   {
     route: 'Inicio',
     name: 'Inicio',
-    component: App
+    component: HomeWrapper
   },
   {
     route: 'Eficiencia',
@@ -20,19 +19,6 @@ export const loggedRoutes = [
   {
     route: '*',
     name: 'all',
-    component: App
+    component: HomeWrapper
   }
 ]
-
-export const defaultRoutes = [
-    {
-    route: 'Login',
-    name: 'Log In',
-    component: Login 
-    },
-    {
-      route: '*',
-      name: 'all',
-      component: Login
-    }
-];

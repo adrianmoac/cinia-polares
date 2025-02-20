@@ -4,7 +4,7 @@ import { ThemeProvider } from '@mui/material';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import theme from '../../theme';
 import { loggedRoutes } from './routes';
-import Protected from './protected';
+import Protected from '../../helpers/protected';
 import Login from '../Login';
 
 const App = () => {

@@ -1,3 +1,4 @@
+import AddEmployee from "../AddEmployee";
 import HomeWrapper from "../Home";
 
 export const loggedRoutes = [
@@ -14,7 +15,7 @@ export const loggedRoutes = [
   {
     route: 'AgregarColaborador',
     name: 'Agregar colaborador',
-    component: ''
+    component: AddEmployee
   },
   {
     route: '*',

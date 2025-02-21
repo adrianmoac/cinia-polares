@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import logo from '../assets/logo.png';
-import { Tab, Tabs } from '@mui/material';
+import { Tab, Tabs, Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -16,10 +16,15 @@ const TopBar: React.FC<Props> = ({ children }) => {
     navigate(newVal);
   }
 
+  const handleLogOut = () => {
+    localStorage.removeItem('token');
+    window.location.href = 'Login'
+  }
+
   return (
     <div style={{ width: '100wh', height: '100vh', margin: 0, padding: 0 }}>
       <div style={{ display: 'flex', flex: 'row' }}>
-        <img src={logo} style={{ width: '45px'}}></img>
+        <img src={logo} style={{ width: '45px', cursor: 'pointer' }} onClick={() => window.location.href = 'Inicio'}></img>
         <Tabs
           value={page}
           onChange={handleChange}
@@ -31,6 +36,10 @@ const TopBar: React.FC<Props> = ({ children }) => {
           <Tab value="Inicio" label="Inicio" />
           <Tab value="Eficiencia" label="Eficiencia" />
         </Tabs>
+        <Typography
+        onClick={handleLogOut}
+        color='gray' 
+        style={{ marginLeft: 'auto', marginRight: 30, marginTop: 'auto', marginBottom: 'auto', cursor: 'pointer' }}>Cerrar sesión</Typography>
       </div>
       {children}
     </div>

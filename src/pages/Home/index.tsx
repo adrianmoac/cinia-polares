@@ -1,9 +1,8 @@
-import React from 'react'
 import HomeView from './homeView'
 
 type Props = {}
 
-const HomeWrapper = (props: Props) => {
+const HomeWrapper: React.FC<Props> = ({ }) => {
   return (
     <HomeView></HomeView>
   )

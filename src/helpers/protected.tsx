@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import TopBar from "./topbar";
+import TopBar from "./topBar";
 
 const Protected = () => {
   const token = localStorage.getItem("token");

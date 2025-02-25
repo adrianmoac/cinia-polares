@@ -6,7 +6,7 @@ import Datepicker from '../../helpers/datepicker';
 
 type Props = {}
 
-const AddEmployeeView: React.FC<Props> = ({ }) => {
+const AddAdminView: React.FC<Props>= ({ }) => {
   const [ error, setError ] = useState<string>('');
   const [ name, setName ] = useState<string>('');
   const [ lastname, setLastname ] = useState<string>('');
@@ -100,21 +100,21 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         </Grid2>
       </Grid2>
       <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
-        <Grid2 size={{ lg: 5.8, xs: 12}}>
+        <Grid2 flex={1} size={{ lg: 5.8, xs: 12}}>
           <Typography>Fecha de nacimiento</Typography>
           <Datepicker size='small' onChange={handleChange} value={birthday}></Datepicker>
         </Grid2>
-        <Grid2 size={{ lg: 5.8, xs: 12}}>
+        <Grid2 flex={1} size={{ lg: 5.8, xs: 12}}>
           <Typography>Discapacidad</Typography>
           <TextField name="disability" size='small' fullWidth onChange={handleChange} value={disability}></TextField>
         </Grid2>
       </Grid2>
       <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
-        <Grid2 size={{ lg: 5.8, xs: 12}}>
+        <Grid2 flex={1} size={{ lg: 5.8, xs: 12}}>
           <Typography>Confecciones mínimas diarias</Typography>
           <TextField name="clothing" size='small' fullWidth onChange={handleChange} value={clothing}></TextField>
         </Grid2>
-        <Grid2 size={{ lg: 5.8, xs: 12}}>
+        <Grid2 flex={1} size={{ lg: 5.8, xs: 12}}>
           <Typography>Salario base</Typography>
           <TextField name="salary" size='small' fullWidth onChange={handleChange} value={salary}></TextField>
         </Grid2>
@@ -127,4 +127,4 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
   )
 }
 
-export default AddEmployeeView
+export default AddAdminView 

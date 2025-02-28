@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Alert, Box, Button, Grid2, TextField, Typography } from '@mui/material'
 import { addDoc, collection } from 'firebase/firestore';
-import { fs } from '../../fireabase';
+import { fs } from '../../firebase';
 import Datepicker from '../../helpers/datepicker';
 
 type Props = {}
@@ -23,7 +23,7 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
           apellido: lastname,
           confecciones_minimas: clothing,
           discapacidad: disability,
-          fecha_nacimiento: new Date(birthday || Date.now()),
+          fecha_nacimiento: new Date(birthday || Date.now()).toLocaleDateString("es-ES"),
           salario_base: salary
         });
     

@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from '@mui/material'
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../fireabase'
+import { auth } from '../../firebase'
 import React from 'react'
 
 interface Props {}

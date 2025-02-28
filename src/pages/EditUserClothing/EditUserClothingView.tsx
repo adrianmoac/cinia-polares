@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Alert, Box, Button, Grid2, TextField, Typography } from '@mui/material'
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { fs } from '../../fireabase';
 import Datepicker from '../../helpers/datepicker';
 
@@ -50,25 +50,14 @@ const EditUserClothingView: React.FC<Props> = ({ user }) => {
   }
 
   const handleSubmit = async () => {
-    const userRef = doc(fs, "workers", user.id);
-    // const dateKey = new Date().toISOString().split('T')[0]; 
-    const dateKey = '22-02-2025'
-    const newData = {
+    const docRef = doc(fs, "workers", user.id, "rendimiento", new Date().toISOString().split('T')[0]);
+    await setDoc(docRef, {
       confecciones_minimas: baseClothing,
       confecciones_totales: totalClothing,
       salario_base: baseSalary,
       salario_total: totalSalary
-    };
-  
-    await updateDoc(userRef, {
-      [`workingDays.${dateKey}`]: newData
-    })
-      // .then(() => {
-      //   window.location.href = '/Inicio';  
-      // })
-      // .catch((error) => {
-      //   console.error("Error updating document: ", error); 
-      // });
+    }, { merge: true });
+    window.location.href = '/Inicio'
   }
 
   return (

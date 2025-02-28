@@ -26,8 +26,6 @@ const AddAdminView: React.FC<Props>= ({ }) => {
           fecha_nacimiento: new Date(birthday || Date.now()),
           salario_base: salary
         });
-    
-        console.log("Empleado guardado con éxito");
         window.location.href = 'Inicio'
       } catch (e) {
         console.error("Error adding document: ", e);

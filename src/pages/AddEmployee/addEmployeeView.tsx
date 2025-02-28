@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Alert, Box, Button, Grid2, TextField, Typography } from '@mui/material'
-import { addDoc, collection } from 'firebase/firestore';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import { fs } from '../../fireabase';
 import Datepicker from '../../helpers/datepicker';
 
@@ -18,16 +18,17 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
   const handleCreateEmployee = async () => {
     if(validateForm()) {
       try {
-        await addDoc(collection(fs, "workers"), {
+        const docRef = doc(collection(fs, "workers"))
+        await setDoc(docRef, {
           nombre: name,
           apellido: lastname,
           confecciones_minimas: clothing,
           discapacidad: disability,
           fecha_nacimiento: new Date(birthday || Date.now()),
-          salario_base: salary
+          salario_base: salary,
+          workerID: docRef.id
         });
     
-        console.log("Empleado guardado con éxito");
         window.location.href = 'Inicio'
       } catch (e) {
         console.error("Error adding document: ", e);

@@ -33,26 +33,26 @@ const HomeWrapper: React.FC<Props> = () => {
   
       let workersData: any = [];
   
-      for (const doc of workersSnapshot.docs) {  // Use 'for...of' here
+      for (const doc of workersSnapshot.docs) { 
         const registrosRef = collection(fs, "workers", doc.id, "rendimiento");
         const q = query(
           registrosRef,
           where("fecha", "==", new Date().toISOString().split('T')[0])
         );
-        let worker: any;
-  
+        
         const snapshot = await getDocs(q);
-        if(!snapshot.empty) {
-          snapshot.forEach((rendimientoDoc) => {
-            worker = { ...doc.data(), ...rendimientoDoc.data() };  // Merge the data
+      
+        if (!snapshot.empty) {
+          snapshot.docs.forEach((rendimientoDoc) => {
+            const worker = { ...doc.data(), ...rendimientoDoc.data() };
+            workersData.push(worker);  // Add each rendimiento to workersData
           });
         } else {
-          worker = doc.data()
+          workersData.push(doc.data());  // If no rendimiento, just push worker's data
         }
-        workersData.push(worker);
       }
   
-      setData(Object.values(workersData));
+      setData(workersData);
       // setFirstDoc(workersSnapshot.docs[0]);
       setLastDoc(workersSnapshot.docs[workersSnapshot.docs.length - 1]);
   
@@ -62,7 +62,7 @@ const HomeWrapper: React.FC<Props> = () => {
       setIsLoading(false);
     }
   };  
-console.log(data)
+
   useEffect(() => {
     fetchData(true);
   }, []);

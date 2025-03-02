@@ -1,6 +1,6 @@
 import AddAdminView from './addAdminView';
 import { db } from '../../firebase';
-import { ref, set } from "firebase/database";
+import { ref, set } from 'firebase/database';
 import { useState } from 'react';
 
 type AdminData = {
@@ -10,55 +10,82 @@ type AdminData = {
   birthDate: string | null;
   password: string;
   repeteadPassword: string;
+  isAdmin: boolean;
 };
 
 const AddAdmin = () => {
   const [adminData, setAdminData] = useState<AdminData>({
-    name: "",
-    lastName: "",
-    email: "",
-    birthDate: null, 
-    password: "",
-    repeteadPassword: "",
+    name: '',
+    lastName: '',
+    email: '',
+    birthDate: null,
+    password: '',
+    repeteadPassword: '',
+    isAdmin: false,
+  });
+
+  const [formErrors] = useState({
+    name: false,
+    lastName: false,
+    email: false,
+    birthDate: false,
+    password: false,
+    repeteadPassword: false,
   });
 
   const [error, setError] = useState<string>('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAdminData({ ...adminData, [e.target.name]: e.target.value });
+    setAdminData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
   };
 
   const handleDateChange = (e: any) => {
-      setAdminData({ ...adminData, birthDate: e });
+    setAdminData((prevData) => ({ ...prevData, birthDate: e }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAdminData((prevData) => ({ ...prevData, isAdmin: e.target.checked }));
+  };
+
+  const validateForm = () => {
+    const passwordsMatch = adminData.password === adminData.repeteadPassword || adminData.repeteadPassword === '';
+    const isFormValid =
+      Object.values(formErrors).every((error) => !error) &&
+      passwordsMatch &&
+      Object.values(adminData).every((field) => field !== '' && field !== null);
+
+    return isFormValid;
   };
 
   const handleAddAdmin = () => {
-    /* if (!adminData.name || !adminData.lastName || !adminData.email || !adminData.birthDate || !adminData.password) {
-      setError('All fields are required!');
+
+    if (!validateForm()) {
+      setError('Por favor, completa todos los campos.');
       return;
     }
 
-    setError(''); */
-
-    const sanitizedEmail = adminData.email.replace(/\./g, ","); // Replace '.' with ',' to prevent Firebase issues
-    const adminRef = ref(db, `Users/${sanitizedEmail}`); // Use email as the key
+    const sanitizedEmail = adminData.email.replace(/\./g, '%2N');
+    const adminRef = ref(db, `Users/${sanitizedEmail}`);
 
     set(adminRef, {
       name: adminData.name,
       last: adminData.lastName,
-      birthDate: new Date(adminData.birthDate || Date.now()).toLocaleDateString("es-ES"),
+      birthDate: new Date(adminData.birthDate || Date.now()).toLocaleDateString('es-ES'),
+      isAdmin: adminData.isAdmin,
     })
-      .then(() => console.log("Admin added successfully!", adminData.birthDate))
-      .catch((error) => console.error("Error adding admin:", error));
+      .then(() => console.log('Admin added successfully!'))
+      .catch((error) => console.error('Error adding admin:', error));
   };
 
   return (
-    <AddAdminView 
-      adminData={adminData} 
-      handleChange={handleChange} 
-      handleDateChange={handleDateChange} 
+    <AddAdminView
+      adminData={adminData}
+      handleChange={handleChange}
+      handleDateChange={handleDateChange}
       handleAddAdmin={handleAddAdmin}
+      handleCheckboxChange={handleCheckboxChange}
       error={error}
+      formErrors={formErrors}
     />
   );
 };

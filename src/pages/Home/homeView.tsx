@@ -100,7 +100,7 @@ const HomeView: React.FC<Props> = ({ loading, data }) => {
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 5 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 3 }}>
-          <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarAdministrador'}>Agregar administrador </Button>
+          <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarAdministrador'}>Agregar usuario </Button>
           <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarColaborador'}>Agregar empleado</Button>
         </Box>
           <Box display={'flex'} flexDirection={'row'} gap={5}>

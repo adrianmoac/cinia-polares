@@ -44,7 +44,7 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({
           {error}
         </Alert>
       )}
-      <Typography variant="h5">Agregar administrador</Typography>
+      <Typography variant="h5">Agregar usuario</Typography>
 
       <Grid2 container spacing={5} sx={{ marginTop: 5 }}>
         <Grid2 size={{ lg: 5.8, xs: 12 }}>

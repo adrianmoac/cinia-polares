@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Button, Grid2, TextField, Typography } from '@mui/material'
 import { doc, setDoc } from 'firebase/firestore';
-import { fs } from '../../fireabase';
+import { fs } from '../../firebase';
 import Datepicker from '../../helpers/datepicker';
 
 interface User {

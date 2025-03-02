@@ -1,6 +1,6 @@
 import { Box, Button, TextField, Typography } from '@mui/material'
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../fireabase'
+import { auth } from '../../firebase'
 import image from '../../assets/ciniaSinFondo.png'
 import React from 'react'
 

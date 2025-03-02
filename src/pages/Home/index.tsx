@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import HomeView from './homeView';
 import { collection, getDocs, orderBy, query, startAfter, limit, where } from 'firebase/firestore';
-import { fs } from '../../fireabase';
+import { fs } from '../../firebase';
 
 type Props = {}
 

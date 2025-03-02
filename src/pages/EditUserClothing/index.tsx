@@ -10,6 +10,7 @@ const EditUserClothing: React.FC<Props> = ({ }) => {
   return (
     <EditUserClothingView
     user={location.state.user}
+    dateProp={location.state.dateProp}
     ></EditUserClothingView>
   )
 }

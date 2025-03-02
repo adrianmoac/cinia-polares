@@ -83,7 +83,7 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, totalDocumentsNum, 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '5px' }}>
             <Tooltip title="Modificar">
               <IconButton>
-                <EditIcon onClick={() => navigate('/EditarConfecciones', { state: { user: row.row } })}/>
+                <EditIcon onClick={() => navigate('/EditarConfecciones', { state: { user: row.row, dateProp: searchDate } })}/>
               </IconButton>
             </Tooltip>
           </Box>

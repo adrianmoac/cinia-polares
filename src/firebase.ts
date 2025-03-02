@@ -24,9 +24,9 @@ const checkDatabaseConnection = async () => {
     const snapshot = await get(testRef);
 
     if (snapshot.exists()) {
-      console.log("Realtime Database connected. 'Users' collection exists.");
+      console.log("Connected");
     } else {
-      console.log("'Users' collection does not exist.");
+      console.log("Not connected");
     }
   } catch (error) {
     console.error("Realtime Database connection failed:", error);

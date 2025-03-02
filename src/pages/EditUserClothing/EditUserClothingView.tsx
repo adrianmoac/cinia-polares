@@ -3,6 +3,7 @@ import { Box, Button, Grid2, TextField, Typography } from '@mui/material'
 import { doc, setDoc } from 'firebase/firestore';
 import { fs } from '../../firebase';
 import Datepicker from '../../helpers/datepicker';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface User {
   workerID: string;
@@ -18,20 +19,21 @@ interface User {
 
 interface Props {
   user: User;
+  dateProp: any;
 }
 
-const EditUserClothingView: React.FC<Props> = ({ user }) => {
+const EditUserClothingView: React.FC<Props> = ({ user, dateProp }) => {
   const [ _, setError ] = useState<string>('');
   const [ baseClothing, setBaseClothing ] = useState<string>(user.confecciones_minimas || "0");
   const [ totalClothing, setTotalClothing ] = useState<string>(user.confecciones_totales || "0");
   const [ baseSalary,  setBaseSalary] = useState<string>(user.salario_base || "0");
   const [ totalSalary, setTotalSalary ] = useState<string>(user.salario_total || "0");
-  const [ date, setDate ] = useState<Date | null>(null);
+  const [ date, setDate ] = useState<Dayjs | Date>(new Date(dateProp.$d));
 
   const handleChange = (e: any) => {
     setError('');
     if(!e.target) {
-      setDate(e);
+      setDate(dayjs(new Date(e)));
     } else {
       const { value, name } = e.target;
       const regex = /^\d+$/;
@@ -48,17 +50,20 @@ const EditUserClothingView: React.FC<Props> = ({ user }) => {
       }
     }
   }
-  const handleSubmit = async () => {
-    const docRef = doc(fs, "workers", user.workerID, "rendimiento", new Date().toISOString().split('T')[0]);
-    await setDoc(docRef, {
-      confecciones_minimas: baseClothing,
-      confecciones_totales: totalClothing,
-      salario_base: baseSalary,
-      salario_total: totalSalary,
-      fecha: new Date().toISOString().split('T')[0]
-    });
-    window.location.href = '/Inicio'
-  }
+const handleSubmit = async () => {
+  const formattedDate = dayjs(date).toDate(); // Convert dayjs to a native Date object
+
+  const docRef = doc(fs, "workers", user.workerID, "rendimiento", formattedDate.toISOString().split('T')[0]);
+
+  await setDoc(docRef, {
+    confecciones_minimas: baseClothing,
+    confecciones_totales: totalClothing,
+    salario_base: baseSalary,
+    salario_total: totalSalary,
+    fecha: formattedDate.toISOString().split('T')[0] // Ensure the format is consistent with Firebase's expected format
+  });
+  window.location.href = '/Inicio';
+}
 
   return (
     <Box margin={4}>
@@ -98,7 +103,7 @@ const EditUserClothingView: React.FC<Props> = ({ user }) => {
   
       {/* Second Grid - Takes 1/3 of the screen */}
       <Grid2 container flex={1} sx={{ width: '33.33%', display: 'flex', justifyContent: 'center' }}>
-        <Datepicker size='small' onChange={handleChange} value={date}></Datepicker>
+        <Datepicker size='small' onChange={handleChange} value={dayjs(date)}></Datepicker>
       </Grid2>
     </Grid2>
     </Box>

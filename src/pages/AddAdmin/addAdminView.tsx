@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Box, Button, Checkbox, FormControlLabel, Grid2, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControlLabel, Grid2, TextField, Typography, FormHelperText } from '@mui/material';
 import Datepicker from '../../helpers/datepicker';
 
 interface AdminData {
@@ -107,12 +107,13 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({
             fullWidth
             onChange={handleChange}
             value={adminData.repeteadPassword}
-            helperText={
-              adminData.repeteadPassword && adminData.repeteadPassword !== adminData.password
-              ? 'Las contraseñas no coinciden'
-                : ''
-            }
+            id="outlined-error-helper-text"
           />
+          {adminData.repeteadPassword && adminData.repeteadPassword !== adminData.password && (
+            <FormHelperText error sx={{ color: 'orange' }}>
+              Las contraseñas no coinciden
+            </FormHelperText>
+          )}
         </Grid2>
       </Grid2>
 

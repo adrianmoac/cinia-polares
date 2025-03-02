@@ -22,10 +22,10 @@ interface Props {
 
 const EditUserClothingView: React.FC<Props> = ({ user }) => {
   const [ _, setError ] = useState<string>('');
-  const [ baseClothing, setBaseClothing ] = useState<string>('');
-  const [ totalClothing, setTotalClothing ] = useState<string>('');
-  const [ baseSalary,  setBaseSalary] = useState<string>('');
-  const [ totalSalary, setTotalSalary ] = useState<string>('');
+  const [ baseClothing, setBaseClothing ] = useState<string>(user.confecciones_minimas || "0");
+  const [ totalClothing, setTotalClothing ] = useState<string>(user.confecciones_totales || "0");
+  const [ baseSalary,  setBaseSalary] = useState<string>(user.salario_base || "0");
+  const [ totalSalary, setTotalSalary ] = useState<string>(user.salario_total || "0");
   const [ date, setDate ] = useState<Date | null>(null);
 
   const handleChange = (e: any) => {

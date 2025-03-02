@@ -9,6 +9,13 @@ import { useNavigate } from 'react-router-dom';
 interface Props {
   data: any;
   loading: boolean;
+  totalDocumentsNum: number;
+  rowsPerPage: number;
+  searchName: string;
+  setSearchName: any;
+  handlePageChange: (page: number) => {};
+  handleSearch: (name: string) => {};
+  handleCleanSearch: () => void;
 }
 
 const ODD_OPACITY = 0.2;
@@ -48,7 +55,7 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
 
 
 
-const HomeView: React.FC<Props> = ({ loading, data }) => {
+const HomeView: React.FC<Props> = ({ loading, data: rowData, totalDocumentsNum, rowsPerPage, searchName, setSearchName, handlePageChange, handleSearch, handleCleanSearch }) => {
   const navigate = useNavigate();
 
   const columns: GridColDef[] = [
@@ -94,7 +101,7 @@ const HomeView: React.FC<Props> = ({ loading, data }) => {
       ),
     },
   ];
-  const paginationModel = { page: 0, pageSize: 5 };
+
   return (
     <Box sx={{ marginX: 5, marginTop: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 5 }}>
@@ -104,7 +111,11 @@ const HomeView: React.FC<Props> = ({ loading, data }) => {
           <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarColaborador'}>Agregar empleado</Button>
         </Box>
           <Box display={'flex'} flexDirection={'row'} gap={5}>
-            <TextField size='small' placeholder='Buscar por empleado' sx={{ width: 450 }}></TextField>
+            <Box display={'flex'} width={'60%'}>
+              <TextField size='small' placeholder='Buscar por nombre' value={searchName} onChange={(e) => setSearchName(e.target.value)} sx={{ width: 450 }}></TextField>
+              <Button variant='outlined' onClick={() => handleSearch(searchName)} sx={{ paddingX: 5}}>Buscar</Button>
+              <Button variant='outlined' onClick={handleCleanSearch} sx={{ paddingX: 5, color: 'gray', borderColor: 'gray' }}>Limpiar</Button>
+            </Box>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label" size={'small'}>Ingresa fecha</InputLabel>
               <Select
@@ -125,12 +136,17 @@ const HomeView: React.FC<Props> = ({ loading, data }) => {
       </Box>
       <Paper sx={{ height: 400, width: '100%' }}>
         <StripedDataGrid
+          rowCount={totalDocumentsNum}
+          paginationMode='server'
           getRowId={(row) => row.workerID}
           loading={loading}
-          rows={data}
+          rows={rowData}
           columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[3]}
+          initialState={{
+            pagination: { paginationModel: { pageSize: rowsPerPage } },
+          }}
+          onPaginationModelChange={(e) => handlePageChange(e.page)}       
+          pageSizeOptions={[rowsPerPage]}
           disableColumnMenu={true}
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? 'odd' : 'even'

@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Alert, Box, Button, Grid2, TextField, Typography } from '@mui/material'
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
-import { fs } from '../../firebase';
+import { Box, Button, Grid2, TextField, Typography } from '@mui/material'
+import { doc, setDoc } from 'firebase/firestore';
+import { fs } from '../../fireabase';
 import Datepicker from '../../helpers/datepicker';
 
 interface User {
-  id: string;
+  workerID: string;
   nombre: string;
   apellido: string;
   confecciones_minimas: string;
@@ -21,7 +21,7 @@ interface Props {
 }
 
 const EditUserClothingView: React.FC<Props> = ({ user }) => {
-  const [ error, setError ] = useState<string>('');
+  const [ _, setError ] = useState<string>('');
   const [ baseClothing, setBaseClothing ] = useState<string>('');
   const [ totalClothing, setTotalClothing ] = useState<string>('');
   const [ baseSalary,  setBaseSalary] = useState<string>('');
@@ -48,27 +48,16 @@ const EditUserClothingView: React.FC<Props> = ({ user }) => {
       }
     }
   }
-
   const handleSubmit = async () => {
-    const userRef = doc(fs, "workers", user.id);
-    // const dateKey = new Date().toISOString().split('T')[0]; 
-    const dateKey = '22-02-2025'
-    const newData = {
+    const docRef = doc(fs, "workers", user.workerID, "rendimiento", new Date().toISOString().split('T')[0]);
+    await setDoc(docRef, {
       confecciones_minimas: baseClothing,
       confecciones_totales: totalClothing,
       salario_base: baseSalary,
-      salario_total: totalSalary
-    };
-  
-    await updateDoc(userRef, {
-      [`workingDays.${dateKey}`]: newData
-    })
-      // .then(() => {
-      //   window.location.href = '/Inicio';  
-      // })
-      // .catch((error) => {
-      //   console.error("Error updating document: ", error); 
-      // });
+      salario_total: totalSalary,
+      fecha: new Date().toISOString().split('T')[0]
+    });
+    window.location.href = '/Inicio'
   }
 
   return (
@@ -103,15 +92,15 @@ const EditUserClothingView: React.FC<Props> = ({ user }) => {
     </Grid2>
     <Box sx={{ display: 'flex', marginTop: 5, marginLeft: 'auto', marginRight: 0 }} gap={2}>
       <Button variant='outlined' onClick={() => window.location.href = 'Inicio'}>Cancelar</Button>
-      <Button variant='contained' onClick={() => handleSubmit()}>Aceptar</Button>
+      <Button variant='contained' onClick={handleSubmit}>Aceptar</Button>
     </Box>
   </Grid2>
   
-  {/* Second Grid - Takes 1/3 of the screen */}
-  <Grid2 container flex={1} sx={{ width: '33.33%', display: 'flex', justifyContent: 'center' }}>
-    <Datepicker size='small' onChange={handleChange} value={date}></Datepicker>
-  </Grid2>
-</Grid2>
+      {/* Second Grid - Takes 1/3 of the screen */}
+      <Grid2 container flex={1} sx={{ width: '33.33%', display: 'flex', justifyContent: 'center' }}>
+        <Datepicker size='small' onChange={handleChange} value={date}></Datepicker>
+      </Grid2>
+    </Grid2>
     </Box>
   )
 }

@@ -1,6 +1,7 @@
-import { Button, TextField, Typography } from '@mui/material'
+import { Box, Button, TextField, Typography } from '@mui/material'
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase'
+import { auth } from '../../fireabase'
+import image from '../../assets/ciniaSinFondo.png'
 import React from 'react'
 
 interface Props {}
@@ -27,30 +28,67 @@ const Login: React.FC<Props> = () => {
   };
 
   return (
-    <div>
-      <Typography>Ingresa el correo</Typography>
+<div style={{ display: "flex", height: "100vh", alignItems: "center" }}>
+  <Box
+    sx={{
+      width: "30vw",
+      height: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <img src={image} alt="logo" style={{ height: "auto", width: "80%" }} />
+  </Box>
+
+  <Box
+    sx={{
+      width: '600px',
+      height: '80vh',
+      borderRadius: 5,
+      border: "1px solid lightgray",
+      padding: 5,
+      marginX: "auto"
+    }}
+  >
+    <Typography fontWeight={"semibold"} sx={{ textAlign: 'center' }} fontSize={25} marginTop={20} marginBottom={3}>
+      CINIA Polares
+    </Typography>
+    <Typography>Ingresa el correo</Typography>
+    <form onSubmit={onSubmit}>
       <TextField
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         size="small"
         fullWidth
+        sx={{ marginBottom: 5 }}
       />
       <Typography>Ingresa la contraseña</Typography>
       <TextField
-        type="password"  
+        type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         size="small"
         fullWidth
+        sx={{ marginBottom: 4 }}
       />
-      <div style={{ display: 'flex', marginTop: '1rem' }}>
-        <Button variant="contained" onClick={onSubmit}>
+      <div style={{ display: "flex", marginTop: "2rem" }}>
+        <Button
+          sx={{ marginLeft: "auto", marginRight: 0 }}
+          fullWidth
+          type="submit"
+          variant="contained"
+          onClick={onSubmit}
+        >
           Continuar
         </Button>
       </div>
-      
-      {error && <Typography color="error">{error}</Typography>} 
-    </div>
+    </form>
+
+    {error && <Typography color="error">{error}</Typography>}
+  </Box>
+</div>
+
   );
 };
 

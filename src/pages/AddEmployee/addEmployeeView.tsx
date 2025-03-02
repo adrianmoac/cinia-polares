@@ -18,16 +18,17 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
   const handleCreateEmployee = async () => {
     if(validateForm()) {
       try {
-        await addDoc(collection(fs, "workers"), {
+        const docRef = doc(collection(fs, "workers"))
+        await setDoc(docRef, {
           nombre: name,
           apellido: lastname,
           confecciones_minimas: clothing,
           discapacidad: disability,
-          fecha_nacimiento: new Date(birthday || Date.now()).toLocaleDateString("es-ES"),
-          salario_base: salary
+          fecha_nacimiento: new Date(birthday || Date.now()),
+          salario_base: salary,
+          workerID: docRef.id
         });
     
-        console.log("Empleado guardado con éxito");
         window.location.href = 'Inicio'
       } catch (e) {
         console.error("Error adding document: ", e);

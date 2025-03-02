@@ -54,11 +54,15 @@ const HomeView: React.FC<Props> = ({ loading, data }) => {
   const columns: GridColDef[] = [
     { field: 'nombre', headerName: 'Nombre', width: 100 },
     { field: 'apellido', headerName: 'Apellido', width: 150 },
-    { field: 'confecciones', headerName: 'Confecciones mínimas', width: 200 },
-    { field: 'confeccionesTotales', headerName: 'Confecciones realizadas', width: 200 },
-    { field: 'salario', headerName: 'Salario base', width: 120 },
-    { field: 'salarioTotal', headerName: 'Salario total', width: 120, flex: 1 },
-    { field: 'eficiencia', headerName: 'Eficiencia', width: 120, flex: 1 },
+    { field: 'confecciones_minimas', headerName: 'Confecciones mínimas', width: 200 },
+    { field: 'confecciones_totales', headerName: 'Confecciones realizadas', width: 200, renderCell: (row: any) => row.row.confecciones_totales ? row.row.confecciones_totales : 'No asignado' },
+    { field: 'salario_base', headerName: 'Salario base ($)', width: 130 },
+    { field: 'salario_total', headerName: 'Salario total ($)', width: 130, flex: 1, renderCell: (row: any) => row.row.salario_total ? row.row.salario_total : 'No asignado' },
+    { field: 'eficiencia', 
+      headerName: 'Eficiencia (%)', 
+      width: 120,
+      flex: 1, 
+      renderCell: (row: any) => row.row.confecciones_totales ? Math.floor(Number(row.row.confecciones_totales) * 100 / Number(row.row.confecciones_minimas)) : 'No asignado' },
     {
       field: ' ',
       headerName: ' ',
@@ -121,6 +125,7 @@ const HomeView: React.FC<Props> = ({ loading, data }) => {
       </Box>
       <Paper sx={{ height: 400, width: '100%' }}>
         <StripedDataGrid
+          getRowId={(row) => row.workerID}
           loading={loading}
           rows={data}
           columns={columns}

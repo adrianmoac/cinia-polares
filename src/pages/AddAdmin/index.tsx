@@ -1,7 +1,8 @@
 import AddAdminView from './addAdminView';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase';
 import { ref, set } from 'firebase/database';
 import { useState } from 'react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 type AdminData = {
   name: string;
@@ -33,6 +34,15 @@ const AddAdmin = () => {
     repeteadPassword: false,
   });
 
+  const fieldNames: Record<Exclude<keyof AdminData, 'isAdmin'>, string> = {
+    name: 'Nombre',
+    lastName: 'Apellidos',
+    email: 'Correo electrónico',
+    birthDate: 'Fecha de nacimiento',
+    password: 'Contraseña',
+    repeteadPassword: 'Confirmación de contraseña',
+  };
+
   const [error, setError] = useState<string>('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,37 +56,59 @@ const AddAdmin = () => {
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdminData((prevData) => ({ ...prevData, isAdmin: e.target.checked }));
   };
-
+  
   const validateForm = () => {
     const passwordsMatch = adminData.password === adminData.repeteadPassword || adminData.repeteadPassword === '';
-    const isFormValid =
-      Object.values(formErrors).every((error) => !error) &&
-      passwordsMatch &&
-      Object.values(adminData).every((field) => field !== '' && field !== null);
-
-    return isFormValid;
+  
+    for (const key in adminData) {
+      if (key === 'isAdmin') continue;
+  
+      const typedKey = key as Exclude<keyof AdminData, 'isAdmin'>;
+      if (adminData[typedKey] === '' || adminData[typedKey] === null) {
+        setError(`Por favor, completa el campo ${fieldNames[typedKey]}`);
+        return false;
+      }
+    }
+  
+    if (adminData.password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return false;
+    }
+  
+    if (!passwordsMatch) {
+      setError('Las contraseñas no coinciden');
+      return false;
+    }
+  
+    return true;
   };
+  
 
-  const handleAddAdmin = () => {
-
+  const handleAddAdmin = async () => {
     if (!validateForm()) {
-      setError('Por favor, completa todos los campos.');
       return;
     }
-
-    const sanitizedEmail = adminData.email.replace(/\./g, '%2N');
-    const adminRef = ref(db, `Users/${sanitizedEmail}`);
-
-    set(adminRef, {
-      name: adminData.name,
-      last: adminData.lastName,
-      birthDate: new Date(adminData.birthDate || Date.now()).toLocaleDateString('es-ES'),
-      isAdmin: adminData.isAdmin,
-    })
-      .then(() => console.log('Admin added successfully!'))
-      .catch((error) => console.error('Error adding admin:', error));
+    
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, adminData.email, adminData.password);
+      const userId = userCredential.user.uid;
+      
+      const adminRef = ref(db, `Users/${userId}`);
+      
+      await set(adminRef, {
+        name: adminData.name,
+        lastName: adminData.lastName,
+        email: adminData.email,
+        birthDate: new Date(adminData.birthDate || Date.now()).toLocaleDateString('es-ES'),
+        isAdmin: adminData.isAdmin,
+      });
+      
+    } catch (error) {
+      console.error('Error creating admin:', error);
+      setError('Error al crear el administrador. Verifique los datos e intente nuevamente.');
+    }
   };
-
+  
   return (
     <AddAdminView
       adminData={adminData}

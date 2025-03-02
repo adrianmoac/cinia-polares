@@ -1,14 +1,25 @@
 import React from 'react'
-import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, TextField, Tooltip } from '@mui/material'
+import { Box, Button, IconButton, Paper, TextField, Tooltip } from '@mui/material'
 import { alpha, styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, gridClasses } from '@mui/x-data-grid';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
+import Datepicker from '../../helpers/datepicker';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface Props {
   data: any;
   loading: boolean;
+  totalDocumentsNum: number;
+  rowsPerPage: number;
+  searchName: string;
+  searchDate: Dayjs | Date | null;
+  setSearchName: (e: any) => void;
+  setSearchDate: (e: any) => void;
+  handlePageChange: (page: number) => {};
+  handleSearch: (name: string) => {};
+  handleCleanSearch: () => void;
 }
 
 const ODD_OPACITY = 0.2;
@@ -48,7 +59,7 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
 
 
 
-const HomeView: React.FC<Props> = ({ loading, data }) => {
+const HomeView: React.FC<Props> = ({ loading, data: rowData, totalDocumentsNum, rowsPerPage, searchName, searchDate, setSearchName, setSearchDate, handlePageChange, handleSearch, handleCleanSearch }) => {
   const navigate = useNavigate();
 
   const columns: GridColDef[] = [
@@ -94,43 +105,42 @@ const HomeView: React.FC<Props> = ({ loading, data }) => {
       ),
     },
   ];
-  const paginationModel = { page: 0, pageSize: 5 };
+
   return (
     <Box sx={{ marginX: 5, marginTop: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 5 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 3 }}>
-          <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarAdministrador'}>Agregar usuario </Button>
-          <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarColaborador'}>Agregar empleado</Button>
-        </Box>
-          <Box display={'flex'} flexDirection={'row'} gap={5}>
-            <TextField size='small' placeholder='Buscar por empleado' sx={{ width: 450 }}></TextField>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label" size={'small'}>Ingresa fecha</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 6, mb: 3 }}>
+            <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarAdministrador'}>Agregar administrador </Button>
+            <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginBottom: 3 }} onClick={() => window.location.href = 'AgregarColaborador'}>Agregar empleado</Button>
+          </Box>
+          <Box display={'flex'} flexDirection={'row'} gap={5} justifyContent={'flex-end'}>
+            <Box display={'flex'} width={'60%'}>
+              <TextField size='small' placeholder='Buscar por nombre' value={searchName} onChange={(e) => setSearchName(e.target.value)} sx={{ width: 450 }}></TextField>
+              <Button variant='outlined' onClick={() => handleSearch(searchName)} sx={{ paddingX: 5}}>Buscar</Button>
+              <Button variant='outlined' onClick={handleCleanSearch} sx={{ paddingX: 5, color: 'gray', borderColor: 'gray' }}>Limpiar</Button>
+            </Box>
+              <Datepicker
                 size='small'
-                value={10}
-                label="Ingresa fecha"
-                // onChange={handleChange}
-              >
-                <MenuItem value={10}>Hoy</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
-            </FormControl>
+                value={searchDate}
+                onChange={(e) => setSearchDate(dayjs(new Date(e)))}
+              ></Datepicker>
           </Box>
         </Box>
       </Box>
       <Paper sx={{ height: 400, width: '100%' }}>
         <StripedDataGrid
+          rowCount={totalDocumentsNum}
+          paginationMode='server'
           getRowId={(row) => row.workerID}
           loading={loading}
-          rows={data}
+          rows={rowData}
           columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[3]}
+          initialState={{
+            pagination: { paginationModel: { pageSize: rowsPerPage } },
+          }}
+          onPaginationModelChange={(e) => handlePageChange(e.page)}       
+          pageSizeOptions={[rowsPerPage]}
           disableColumnMenu={true}
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? 'odd' : 'even'

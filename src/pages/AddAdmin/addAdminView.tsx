@@ -1,14 +1,15 @@
 import React from 'react';
-import { Alert, Box, Button, Grid2, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControlLabel, Grid2, TextField, Typography, FormHelperText } from '@mui/material';
 import Datepicker from '../../helpers/datepicker';
 
-export interface AdminData {
+interface AdminData {
   name: string;
   lastName: string;
   email: string;
   birthDate: string | null;
   password: string;
   repeteadPassword: string;
+  isAdmin: boolean;
 }
 
 interface AddAdminViewProps {
@@ -16,10 +17,26 @@ interface AddAdminViewProps {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleAddAdmin: () => void;
   handleDateChange: (e: any) => void;
+  handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: string;
+  formErrors: {
+    name: boolean;
+    lastName: boolean;
+    email: boolean;
+    birthDate: boolean;
+    password: boolean;
+    repeteadPassword: boolean;
+  };
 }
 
-const AddAdminView: React.FC<AddAdminViewProps> = ({ adminData, handleChange, handleAddAdmin, handleDateChange, error }) => {
+const AddAdminView: React.FC<AddAdminViewProps> = ({
+  adminData,
+  handleChange,
+  handleAddAdmin,
+  handleDateChange,
+  handleCheckboxChange,
+  error,
+}) => {
   return (
     <Box margin={4}>
       {error && (
@@ -28,13 +45,8 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({ adminData, handleChange, ha
         </Alert>
       )}
       <Typography variant="h5">Agregar administrador</Typography>
-      <Grid2
-        container
-        display="flex"
-        flexDirection="row"
-        gap={5}
-        sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}
-      >
+
+      <Grid2 container spacing={5} sx={{ marginTop: 5 }}>
         <Grid2 size={{ lg: 5.8, xs: 12 }}>
           <Typography>Nombre</Typography>
           <TextField
@@ -56,22 +68,13 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({ adminData, handleChange, ha
           />
         </Grid2>
       </Grid2>
-      <Grid2
-        container
-        display="flex"
-        flexDirection="row"
-        gap={5}
-        sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}
-      >
-        <Grid2 flex={1} size={{ lg: 5.8, xs: 12 }}>
+
+      <Grid2 container spacing={5} sx={{ marginTop: 5 }}>
+        <Grid2 size={{ lg: 5.8, xs: 12 }}>
           <Typography>Fecha de nacimiento</Typography>
-          <Datepicker
-            size="small"
-            onChange={handleDateChange}
-            value={adminData.birthDate}
-          />
+          <Datepicker size="small" onChange={handleDateChange} value={adminData.birthDate} />
         </Grid2>
-        <Grid2 flex={1} size={{ lg: 5.8, xs: 12 }}>
+        <Grid2 size={{ lg: 5.8, xs: 12 }}>
           <Typography>Correo electrónico</Typography>
           <TextField
             name="email"
@@ -82,14 +85,9 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({ adminData, handleChange, ha
           />
         </Grid2>
       </Grid2>
-      <Grid2
-        container
-        display="flex"
-        flexDirection="row"
-        gap={5}
-        sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}
-      >
-        <Grid2 flex={1} size={{ lg: 5.8, xs: 12 }}>
+
+      <Grid2 container spacing={5} sx={{ marginTop: 5 }}>
+        <Grid2 size={{ lg: 5.8, xs: 12 }}>
           <Typography>Contraseña</Typography>
           <TextField
             name="password"
@@ -100,7 +98,7 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({ adminData, handleChange, ha
             value={adminData.password}
           />
         </Grid2>
-        <Grid2 flex={1} size={{ lg: 5.8, xs: 12 }}>
+        <Grid2 size={{ lg: 5.8, xs: 12 }}>
           <Typography>Confirmar contraseña</Typography>
           <TextField
             name="repeteadPassword"
@@ -109,9 +107,26 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({ adminData, handleChange, ha
             fullWidth
             onChange={handleChange}
             value={adminData.repeteadPassword}
+            id="outlined-error-helper-text"
           />
+          {adminData.repeteadPassword && adminData.repeteadPassword !== adminData.password && (
+            <FormHelperText error sx={{ color: 'orange' }}>
+              Las contraseñas no coinciden
+            </FormHelperText>
+          )}
         </Grid2>
       </Grid2>
+
+      <Box marginTop={3}>
+        <FormControlLabel
+          control={<Checkbox name="isAdmin" checked={adminData.isAdmin} onChange={handleCheckboxChange} />}
+          label="Administrador"
+        />
+        <Typography variant="body2" color="textSecondary">
+          El usuario podrá crear usuarios, ver y administrar los salarios, así como realizar cualquier otra acción en la plataforma.
+        </Typography>
+      </Box>
+
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 5 }} gap={2}>
         <Button variant="outlined" onClick={() => (window.location.href = 'Inicio')}>
           Cancelar

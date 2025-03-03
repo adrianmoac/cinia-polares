@@ -8,18 +8,20 @@ import Protected from '../../helpers/protected';
 import Login from '../Login';
 
 const App = () => {
+  const authToken = localStorage.getItem('token');
+
   return (
     <ThemeProvider theme={theme}>
-      <Routes>
-        {Object.values(loggedRoutes).map((route) => (
-          <Route key={route.route} element={<Protected />}>
-            <Route path={route.route} element={<route.component />} />
-          </Route>
-        ))}
-        {!localStorage.getItem("token") && 
-          <Route path="/Login" element={<Login />} />
-        }
-      </Routes>
+        <Routes>
+          {Object.values(loggedRoutes).map((route) => (
+            <Route key={route.route} element={<Protected />}>
+              <Route path={route.route} element={<route.component />} />
+            </Route>
+          ))}
+          {!authToken && 
+            <Route path="/Login" element={<Login />} />
+          }
+        </Routes>
     </ThemeProvider>
   );
 };

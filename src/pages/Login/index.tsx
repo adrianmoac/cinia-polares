@@ -18,7 +18,7 @@ const Login: React.FC<Props> = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      localStorage.setItem("token", user.email || '');
+      localStorage.setItem('token', user.uid);
 
       window.location.href = '/Inicio';
     } catch (error) {

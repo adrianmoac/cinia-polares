@@ -1,16 +1,17 @@
 import React from 'react'
 import { Box, Button, IconButton, Paper, TextField, Tooltip } from '@mui/material'
 import { alpha, styled } from '@mui/material/styles';
-import { DataGrid, GridColDef, gridClasses } from '@mui/x-data-grid';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
 import Datepicker from '../../helpers/datepicker';
 import dayjs, { Dayjs } from 'dayjs';
+import { Delete } from '@mui/icons-material';
 
 interface Props {
   data: any;
   loading: boolean;
+  isAdmin: boolean;
   totalDocumentsNum: number;
   rowsPerPage: number;
   searchName: string;
@@ -59,16 +60,16 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
 
 
 
-const HomeView: React.FC<Props> = ({ loading, data: rowData, totalDocumentsNum, rowsPerPage, searchName, searchDate, setSearchName, setSearchDate, handlePageChange, handleSearch, handleCleanSearch }) => {
+const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocumentsNum, rowsPerPage, searchName, searchDate, setSearchName, setSearchDate, handlePageChange, handleSearch, handleCleanSearch }) => {
   const navigate = useNavigate();
 
-  const columns: GridColDef[] = [
+  const columns: any[] = [
     { field: 'nombre', headerName: 'Nombre', width: 100 },
     { field: 'apellido', headerName: 'Apellido', width: 150 },
     { field: 'confecciones_minimas', headerName: 'Confecciones mínimas', width: 200 },
     { field: 'confecciones_totales', headerName: 'Confecciones realizadas', width: 200, renderCell: (row: any) => row.row.confecciones_totales ? row.row.confecciones_totales : 'No asignado' },
-    { field: 'salario_base', headerName: 'Salario base ($)', width: 130 },
-    { field: 'salario_total', headerName: 'Salario total ($)', width: 130, flex: 1, renderCell: (row: any) => row.row.salario_total ? row.row.salario_total : 'No asignado' },
+    isAdmin && { field: 'salario_base', headerName: 'Salario base ($)', width: 130 },
+    isAdmin && { field: 'salario_total', headerName: 'Salario total ($)', width: 130, flex: 1, renderCell: (row: any) => row.row.salario_total ? row.row.salario_total : 'No asignado' },
     { field: 'eficiencia', 
       headerName: 'Eficiencia (%)', 
       width: 120,
@@ -79,7 +80,7 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, totalDocumentsNum, 
       headerName: ' ',
       sortable: false,
       width: 60,
-      renderCell: (row) => (
+      renderCell: (row: any) => (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '5px' }}>
             <Tooltip title="Modificar">
               <IconButton>
@@ -89,31 +90,33 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, totalDocumentsNum, 
           </Box>
       ),
     },
-    {
+    isAdmin && {
       field: '  ',
       headerName: ' ',
       sortable: false,
       width: 60,
-      renderCell: (_) => (
+      renderCell: (_: any) => (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '5px' }}>
-            <Tooltip title="Ver información">
+            <Tooltip title="Borrar empleado">
               <IconButton>
-                <ArrowForwardIcon />
+                <Delete />
               </IconButton>
             </Tooltip>
           </Box>
       ),
     },
-  ];
+  ].filter(Boolean);
 
   return (
     <Box sx={{ marginX: 5, marginTop: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 5 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 6, mb: 3 }}>
-            <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarAdministrador'}>Agregar administrador </Button>
-            <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginBottom: 3 }} onClick={() => window.location.href = 'AgregarColaborador'}>Agregar empleado</Button>
-          </Box>
+          {isAdmin &&
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 6, mb: 3 }}>
+              <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AgregarAdministrador'}>Agregar administrador </Button>
+              <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginBottom: 3 }} onClick={() => window.location.href = 'AgregarColaborador'}>Agregar empleado</Button>
+            </Box>
+          }
           <Box display={'flex'} flexDirection={'row'} gap={5} justifyContent={'flex-end'}>
             <Box display={'flex'} width={'60%'}>
               <TextField size='small' placeholder='Buscar por nombre' value={searchName} onChange={(e) => setSearchName(e.target.value)} sx={{ width: 450 }}></TextField>

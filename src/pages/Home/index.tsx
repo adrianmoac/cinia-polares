@@ -16,6 +16,8 @@ const HomeWrapper: React.FC<Props> = () => {
   const [totalDocumentsNum, setTotalDocumentsNum] = useState<number>(0);
   const [totalDocumentsNumWillNotChange, setTotalDocumentsNumWillNotChange] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
+  const userData: any = localStorage.getItem('userData')
+  const { isAdmin } = JSON.parse(userData);
 
   const rowsPerPage = 3;
 
@@ -169,6 +171,7 @@ const HomeWrapper: React.FC<Props> = () => {
     <HomeView
       data={data}
       loading={isLoading}
+      isAdmin={isAdmin}
       totalDocumentsNum={totalDocumentsNum}
       rowsPerPage={rowsPerPage}
       searchName={searchName}

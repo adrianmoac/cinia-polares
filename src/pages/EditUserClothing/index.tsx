@@ -6,11 +6,14 @@ type Props = {}
 
 const EditUserClothing: React.FC<Props> = ({ }) => {
   const location = useLocation();
+  const userData: any = localStorage.getItem('userData')
+  const { isAdmin } = JSON.parse(userData);
 
   return (
     <EditUserClothingView
     user={location.state.user}
     dateProp={location.state.dateProp}
+    isAdmin={isAdmin}
     ></EditUserClothingView>
   )
 }

@@ -18,6 +18,7 @@ const TopBar: React.FC<Props> = ({ children }) => {
 
   const handleLogOut = () => {
     localStorage.removeItem('validToken');
+    localStorage.removeItem('userData');
     window.location.href = '/Login'
   }
 

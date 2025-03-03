@@ -20,9 +20,10 @@ interface User {
 interface Props {
   user: User;
   dateProp: any;
+  isAdmin: boolean;
 }
 
-const EditUserClothingView: React.FC<Props> = ({ user, dateProp }) => {
+const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin }) => {
   const [ _, setError ] = useState<string>('');
   const [ baseClothing, setBaseClothing ] = useState<string>(user.confecciones_minimas || "0");
   const [ totalClothing, setTotalClothing ] = useState<string>(user.confecciones_totales || "0");
@@ -85,16 +86,18 @@ const handleSubmit = async () => {
         <TextField name="totalClothing" size='small' fullWidth onChange={handleChange} value={totalClothing} />
       </Grid2>
     </Grid2>
-    <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: {lg: 15, xs: 5}, justifyContent: 'space-between' }}>
-      <Grid2 size={{ lg: 5.4, xs: 12 }}>
-        <Typography>Salario base</Typography>
-        <TextField size='small' fullWidth name="baseSalary" onChange={handleChange} value={baseSalary} />
+    {isAdmin &&
+      <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: {lg: 15, xs: 5}, justifyContent: 'space-between' }}>
+        <Grid2 size={{ lg: 5.4, xs: 12 }}>
+          <Typography>Salario base</Typography>
+          <TextField size='small' fullWidth name="baseSalary" onChange={handleChange} value={baseSalary} />
+        </Grid2>
+        <Grid2 size={{ lg: 5.4, xs: 12 }}>
+          <Typography>Salario total</Typography>
+          <TextField name="totalSalary" size='small' fullWidth onChange={handleChange} value={totalSalary} />
+        </Grid2>
       </Grid2>
-      <Grid2 size={{ lg: 5.4, xs: 12 }}>
-        <Typography>Salario total</Typography>
-        <TextField name="totalSalary" size='small' fullWidth onChange={handleChange} value={totalSalary} />
-      </Grid2>
-    </Grid2>
+    }
     <Box sx={{ display: 'flex', marginTop: 5, marginLeft: 'auto', marginRight: 0 }} gap={2}>
       <Button variant='outlined' onClick={() => window.location.href = 'Inicio'}>Cancelar</Button>
       <Button variant='contained' onClick={handleSubmit}>Aceptar</Button>

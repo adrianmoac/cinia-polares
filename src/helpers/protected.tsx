@@ -15,6 +15,8 @@ if(!validToken && location.pathname === '/Login')
     if (snapshot.exists()) {
       localStorage.removeItem('token');
       localStorage.setItem('validToken', token || '');
+      const userData = snapshot.val()
+      localStorage.setItem('userData', JSON.stringify(userData))
       validToken = token;
       window.location.href = 'Inicio'
     } 

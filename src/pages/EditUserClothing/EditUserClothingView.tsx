@@ -45,8 +45,6 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin }) => {
           setTotalClothing(value);
         } else if(name === 'baseSalary') {
           setBaseSalary(value);
-        } else if(name === 'totalSalary') {
-          setTotalSalary(value);
         }
       }
     }
@@ -94,7 +92,7 @@ const handleSubmit = async () => {
         </Grid2>
         <Grid2 size={{ lg: 5.4, xs: 12 }}>
           <Typography>Salario total</Typography>
-          <TextField name="totalSalary" size='small' fullWidth onChange={handleChange} value={totalSalary} />
+          <TextField disabled size='small' fullWidth value={totalSalary} />
         </Grid2>
       </Grid2>
     }

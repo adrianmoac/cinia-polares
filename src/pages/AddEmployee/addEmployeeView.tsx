@@ -3,6 +3,7 @@ import { Alert, Box, Button, Grid2, TextField, Typography } from '@mui/material'
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { fs } from '../../firebase';
 import Datepicker from '../../helpers/datepicker';
+import dayjs from 'dayjs';
 
 type Props = {}
 
@@ -103,7 +104,7 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
       <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
         <Grid2 size={{ lg: 5.8, xs: 12}}>
           <Typography>Fecha de nacimiento</Typography>
-          <Datepicker size='small' onChange={handleChange} value={birthday}></Datepicker>
+          <Datepicker size='small' maxDate={dayjs(new Date())} onChange={handleChange} value={birthday}></Datepicker>
         </Grid2>
         <Grid2 size={{ lg: 5.8, xs: 12}}>
           <Typography>Discapacidad</Typography>

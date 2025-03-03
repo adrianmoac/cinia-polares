@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert, Box, Button, Checkbox, FormControlLabel, Grid2, TextField, Typography, FormHelperText } from '@mui/material';
 import Datepicker from '../../helpers/datepicker';
+import dayjs from 'dayjs';
 
 interface AdminData {
   name: string;
@@ -72,7 +73,7 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({
       <Grid2 container spacing={5} sx={{ marginTop: 5 }}>
         <Grid2 size={{ lg: 5.8, xs: 12 }}>
           <Typography>Fecha de nacimiento</Typography>
-          <Datepicker size="small" onChange={handleDateChange} value={adminData.birthDate} />
+          <Datepicker size="small" maxDate={dayjs(new Date())} onChange={handleDateChange} value={adminData.birthDate} />
         </Grid2>
         <Grid2 size={{ lg: 5.8, xs: 12 }}>
           <Typography>Correo electrónico</Typography>

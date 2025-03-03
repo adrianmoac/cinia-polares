@@ -127,6 +127,7 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocum
                 size='small'
                 value={searchDate}
                 onChange={(e) => setSearchDate(dayjs(new Date(e)))}
+                maxDate={dayjs(new Date())}
               ></Datepicker>
           </Box>
         </Box>

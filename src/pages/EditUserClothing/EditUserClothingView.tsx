@@ -106,7 +106,7 @@ const handleSubmit = async () => {
   
       {/* Second Grid - Takes 1/3 of the screen */}
       <Grid2 container flex={1} sx={{ width: '33.33%', display: 'flex', justifyContent: 'center' }}>
-        <Datepicker size='small' onChange={handleChange} value={dayjs(date)}></Datepicker>
+        <Datepicker size='small' maxDate={new Date()} onChange={handleChange} value={dayjs(date)}></Datepicker>
       </Grid2>
     </Grid2>
     </Box>

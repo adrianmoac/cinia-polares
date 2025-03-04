@@ -9,7 +9,7 @@ const Protected = () => {
   const dbRef = ref(db, `Users/${token}`); 
   let validToken = localStorage.getItem('validToken');
 
-if(!validToken && location.pathname === '/Login')
+if(!validToken && location.pathname === '/Login') {
   get(dbRef)
   .then((snapshot) => {
     if (snapshot.exists()) {
@@ -18,12 +18,13 @@ if(!validToken && location.pathname === '/Login')
       const userData = snapshot.val()
       localStorage.setItem('userData', JSON.stringify(userData))
       validToken = token;
-      window.location.href = 'Inicio'
+      window.location.href = '/Inicio'
     } 
   })
   .catch((error) => {
     console.error(error);
   });
+}
 
   if (validToken) {
     return (

@@ -13,7 +13,6 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
   const [ lastname, setLastname ] = useState<string>('');
   const [ birthday,  setBirthday] = useState<Date | null>(null);
   const [ disability, setDisability ] = useState<string>('');
-  const [ clothing, setClothing ] = useState<string>('');
   const [ salary, setSalary ] = useState<string>('');
 
   const handleCreateEmployee = async () => {
@@ -23,7 +22,6 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         await setDoc(docRef, {
           nombre: name,
           apellido: lastname,
-          confecciones_minimas: clothing,
           discapacidad: disability,
           fecha_nacimiento: new Date(birthday || Date.now()),
           salario_base: salary,
@@ -51,9 +49,6 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
     } else if (!disability) {
       setError('Ingresa discapacidad');
       valid = false;
-    } else if (!clothing) {
-      setError('Confecciones mínimas');
-      valid = false;
     } else if (!salary) {
       setError('Ingresa salario');
       valid = false;
@@ -73,8 +68,6 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         setLastname(value);
       } else if(name === 'disability') {
         setDisability(value);
-      } else if(name === 'clothing') {
-        setClothing(value);
       } else if(name === 'salary') {
         const regex = /^\d+$/;
         if(regex.test(value)) {
@@ -112,10 +105,6 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         </Grid2>
       </Grid2>
       <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
-        <Grid2 size={{ lg: 5.8, xs: 12}}>
-          <Typography>Confecciones mínimas diarias</Typography>
-          <TextField name="clothing" size='small' fullWidth onChange={handleChange} value={clothing}></TextField>
-        </Grid2>
         <Grid2 size={{ lg: 5.8, xs: 12}}>
           <Typography>Salario base</Typography>
           <TextField name="salary" size='small' fullWidth onChange={handleChange} value={salary}></TextField>

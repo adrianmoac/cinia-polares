@@ -64,8 +64,11 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocum
   const navigate = useNavigate();
 
   const columns: any[] = [
+    { field: 'numero_empleado', headerName: '# Empleado', width: 150 },
     { field: 'nombre', headerName: 'Nombre', width: 100 },
     { field: 'apellido', headerName: 'Apellido', width: 150 },
+    { field: 'area', headerName: 'Área', width: 150 },
+    { field: 'subarea', headerName: 'Subárea', width: 150 },
     isAdmin && { field: 'salario_base', headerName: 'Salario base ($)', width: 130 },
     isAdmin && { field: 'salario_total', headerName: 'Salario total ($)', width: 130, flex: 1, renderCell: (row: any) => row.row.salario_total ? row.row.salario_total : 'No calculado' },
     { field: 'eficiencia', 

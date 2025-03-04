@@ -13,6 +13,9 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
   const [ lastname, setLastname ] = useState<string>('');
   const [ birthday,  setBirthday] = useState<Date | null>(null);
   const [ disability, setDisability ] = useState<string>('');
+  const [ area, setArea ] = useState<string>('');
+  const [ subarea, setSubarea ] = useState<string>('');
+  const [ employeeNumber, setEmployeeNumber ] = useState<string>('');
   const [ salary, setSalary ] = useState<string>('');
 
   const handleCreateEmployee = async () => {
@@ -25,6 +28,9 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
           discapacidad: disability,
           fecha_nacimiento: new Date(birthday || Date.now()),
           salario_base: salary,
+          area: area,
+          subarea: subarea,
+          numero_empleado: employeeNumber,
           workerID: docRef.id
         });
     
@@ -52,6 +58,15 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
     } else if (!salary) {
       setError('Ingresa salario');
       valid = false;
+    } else if (!area) {
+      setError('Ingresa área');
+      valid = false;
+    } else if (!subarea) {
+      setError('Ingresa subárea');
+      valid = false;
+    } else if (!employeeNumber) {
+      setError('Ingresa número de empleado');
+      valid = false;
     }
     return valid;
   }
@@ -68,6 +83,15 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         setLastname(value);
       } else if(name === 'disability') {
         setDisability(value);
+      } else if(name === 'area') {
+        setArea(value);
+      } else if(name === 'subarea') {
+        setSubarea(value);
+      } else if(name === 'employeeNumber') {
+        const regex = /^\d+$/;
+        if(regex.test(value)) {
+          setEmployeeNumber(value);
+        }
       } else if(name === 'salary') {
         const regex = /^\d+$/;
         if(regex.test(value)) {
@@ -105,6 +129,20 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         </Grid2>
       </Grid2>
       <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
+        <Grid2 size={{ lg: 5.8, xs: 12}}>
+          <Typography>Área</Typography>
+          <TextField name="area" size='small' fullWidth onChange={handleChange} value={area}></TextField>
+        </Grid2>
+        <Grid2 size={{ lg: 5.8, xs: 12}}>
+          <Typography>Subárea</Typography>
+          <TextField name="subarea" size='small' fullWidth onChange={handleChange} value={subarea}></TextField>
+        </Grid2>
+      </Grid2>
+      <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
+        <Grid2 size={{ lg: 5.8, xs: 12}}>
+          <Typography>Número de empleado</Typography>
+          <TextField name="employeeNumber" size='small' fullWidth onChange={handleChange} value={employeeNumber}></TextField>
+        </Grid2>
         <Grid2 size={{ lg: 5.8, xs: 12}}>
           <Typography>Salario base</Typography>
           <TextField name="salary" size='small' fullWidth onChange={handleChange} value={salary}></TextField>

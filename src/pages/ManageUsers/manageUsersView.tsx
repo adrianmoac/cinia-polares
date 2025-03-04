@@ -60,7 +60,7 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
 
 
 
-const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocumentsNum, rowsPerPage, searchName, searchDate, setSearchName, setSearchDate, handlePageChange, handleSearch, handleCleanSearch }) => {
+const ManageUsersView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocumentsNum, rowsPerPage, searchName, searchDate, setSearchName, setSearchDate, handlePageChange, handleSearch, handleCleanSearch }) => {
   const navigate = useNavigate();
 
   const columns: any[] = [
@@ -113,8 +113,7 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocum
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
           {isAdmin &&
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 6, mb: 3 }}>
-              <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginLeft: 'auto', marginBottom: 3 }} onClick={() => window.location.href = 'AdministrarUsuarios'}>Administrar usuarios</Button>
-              <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginBottom: 3 }} onClick={() => window.location.href = 'AgregarColaborador'}>Agregar empleado</Button>
+              <Button variant='contained' sx={{ textTransform: 'none', width: 250, marginRight: 0, marginBottom: 3 }} onClick={() => window.location.href = 'CrearAdministrador'}>Crear usuario</Button>
             </Box>
           }
           <Box display={'flex'} flexDirection={'row'} gap={5} justifyContent={'flex-end'}>
@@ -155,4 +154,4 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocum
   )
 }
 
-export default HomeView
+export default ManageUsersView

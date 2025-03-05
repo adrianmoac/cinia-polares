@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { Alert, Box, Button, Grid2, TextField, Typography } from '@mui/material'
-import { collection, doc, setDoc } from 'firebase/firestore';
-import { fs } from '../../firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, fs } from '../../firebase';
 import Datepicker from '../../helpers/datepicker';
 import dayjs from 'dayjs';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 type Props = {}
 
@@ -16,12 +17,20 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
   const [ area, setArea ] = useState<string>('');
   const [ subarea, setSubarea ] = useState<string>('');
   const [ employeeNumber, setEmployeeNumber ] = useState<string>('');
+  const [ email, setEmail ] = useState<string>('');
+  const [ password, setPassword ] = useState<string>('');
+  const [ confPassword, setConfPassword ] = useState<string>('');
+  const [ emailError, setEmailError ] = useState<boolean>(false);
+  const [ passwordError, setPasswordError ] = useState<boolean>(false);
   const [ salary, setSalary ] = useState<string>('');
 
   const handleCreateEmployee = async () => {
     if(validateForm()) {
       try {
-        const docRef = doc(collection(fs, "workers"))
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userId = userCredential.user.uid;
+
+        const docRef = doc(fs, "workers", userId)
         await setDoc(docRef, {
           nombre: name,
           apellido: lastname,
@@ -31,12 +40,13 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
           area: area,
           subarea: subarea,
           numero_empleado: employeeNumber,
-          workerID: docRef.id
+          workerID: userId
         });
-    
-        window.location.href = 'Inicio'
-      } catch (e) {
-        console.error("Error adding document: ", e);
+        window.location.href = 'Inicio';
+
+      } catch (error) {
+        console.error('Error creating admin:', error);
+        setError('Error al crear el administrador. Verifique los datos e intente nuevamente.');
       }
     } 
   }
@@ -67,6 +77,15 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
     } else if (!employeeNumber) {
       setError('Ingresa número de empleado');
       valid = false;
+    } else if (!email) {
+      setError('Ingresa el correo del empleado');
+      valid = false;
+    } else if (!password) {
+      setError('Ingresa la contraseña del usuario');
+      valid = false;
+    } else if (!confPassword) {
+      setError('Confirma la contraseña del usuario');
+      valid = false;
     }
     return valid;
   }
@@ -87,6 +106,19 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         setArea(value);
       } else if(name === 'subarea') {
         setSubarea(value);
+      } else if(name === 'password') {
+        setPassword(value);
+      } else if(name === 'confPassword') {
+        if(password !== value) {
+          setPasswordError(true);
+        } else {
+          setPasswordError(false)
+        }
+        setConfPassword(value);
+      }else if(name === 'email') {
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        setEmailError(!regex.test(value))
+        setEmail(value);
       } else if(name === 'employeeNumber') {
         const regex = /^\d+$/;
         if(regex.test(value)) {
@@ -146,6 +178,37 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         <Grid2 size={{ lg: 5.8, xs: 12}}>
           <Typography>Salario base</Typography>
           <TextField name="salary" size='small' fullWidth onChange={handleChange} value={salary}></TextField>
+        </Grid2>
+      </Grid2>
+      <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
+        <Grid2 size={{ lg: 5.8, xs: 12}}>
+          <Typography>Correo electrónico</Typography>
+          <TextField 
+          name="email" 
+          size='small' 
+          fullWidth 
+          onChange={handleChange} 
+          error={emailError}
+          helperText={emailError ? 'Formato incorrecto.' : ''}
+          value={email}></TextField>
+        </Grid2>
+        <Grid2 size={{ lg: 5.8, xs: 12}}>
+          <Typography>Contraseña</Typography>
+          <TextField name="password" type='password' size='small' fullWidth onChange={handleChange} value={password}></TextField>
+        </Grid2>
+      </Grid2>
+      <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
+        <Grid2 size={{ lg: 5.8, xs: 12}}>
+          <Typography>Confirmar contraseña</Typography>
+          <TextField 
+          name="confPassword" 
+          type='password'
+          size='small' 
+          fullWidth 
+          onChange={handleChange} 
+          error={passwordError}
+          helperText={passwordError ? 'Las contraseñas no coinciden.' : ''}
+          value={confPassword}></TextField>
         </Grid2>
       </Grid2>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 5 }} gap={2}>

@@ -20,7 +20,7 @@ const Login: React.FC<Props> = () => {
 
       localStorage.setItem('token', user.uid);
 
-      window.location.href = '/Inicio';
+      window.location.href = '/Login';
     } catch (error) {
       console.log('Error during login:', error);
       setError('Login failed. Please check your credentials.');

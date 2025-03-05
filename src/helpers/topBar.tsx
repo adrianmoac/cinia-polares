@@ -10,6 +10,7 @@ type Props = {
 const TopBar: React.FC<Props> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isWorker = localStorage.getItem('workerToken');
   const page = location.pathname.split('/')[1];
 
   const handleChange = (_: any, newVal: string) => {
@@ -18,6 +19,7 @@ const TopBar: React.FC<Props> = ({ children }) => {
 
   const handleLogOut = () => {
     localStorage.removeItem('validToken');
+    localStorage.removeItem('workerToken');
     localStorage.removeItem('userData');
     window.location.href = '/Login'
   }
@@ -25,18 +27,24 @@ const TopBar: React.FC<Props> = ({ children }) => {
   return (
     <div style={{ width: '100wh', height: '100vh', margin: 0, padding: 0 }}>
       <div style={{ display: 'flex', flex: 'row' }}>
-        <img src={logo} style={{ width: '45px', cursor: 'pointer' }} onClick={() => window.location.href = 'Inicio'}></img>
-        <Tabs
-          value={page}
-          onChange={handleChange}
-          style={{ marginLeft: 10 }}
-          textColor="primary"
-          indicatorColor="primary"
-          aria-label="primary tabs example"
-        >
-          <Tab value="Inicio" label="Inicio" />
-          <Tab value="Eficiencia" label="Eficiencia" />
-        </Tabs>
+        {!isWorker ?
+          <img src={logo} style={{ width: '45px', cursor: 'pointer' }} onClick={() => window.location.href = 'Inicio'}></img>
+          :
+          <img src={logo} style={{ width: '45px' }}></img>
+        }
+        {!isWorker &&
+          <Tabs
+            value={page}
+            onChange={handleChange}
+            style={{ marginLeft: 10 }}
+            textColor="primary"
+            indicatorColor="primary"
+            aria-label="primary tabs example"
+          >
+            <Tab value="Inicio" label="Inicio" />
+            <Tab value="Eficiencia" label="Eficiencia" />
+          </Tabs>
+        }
         <Typography
         onClick={handleLogOut}
         color='gray' 

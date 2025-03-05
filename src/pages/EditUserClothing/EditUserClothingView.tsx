@@ -22,6 +22,7 @@ interface Props {
   user: User;
   dateProp: any;
   isAdmin: boolean;
+  isWorker: boolean;
 }
 
 interface Process {
@@ -32,12 +33,13 @@ interface Process {
 
 type SelectedProcess = Process[];
 
-const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin }) => {
+const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin, isWorker }) => {
   const [_, setError] = useState<string>('');
   const [baseSalary, setBaseSalary] = useState<string>(user.salario_base || '0');
   const [totalSalary, setTotalSalary] = useState<string>(user.salario_total || '0');
   const [performance, setPerformance] = useState<number>(0);
   const [selectedProcess, setSelectedProcess] = useState<SelectedProcess>([]);
+  const [workerSubmitted, setWorkerSubmitted] = useState<boolean>(false);
   const [date, setDate] = useState<Dayjs | Date>(dayjs(new Date(dateProp.$d)));
 
   const calculatePerformance = (salary: number, updatedSelectedProcess: SelectedProcess) => {
@@ -130,8 +132,20 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin }) => {
       })
 
     }
-    window.location.href = '/Inicio';
+    if(!isWorker) {
+      window.location.href = '/Inicio';
+    } else {
+      localStorage.clear();
+      localStorage.setItem(new Date().toLocaleDateString('es'), 'true')
+      setWorkerSubmitted(true);
+    }
   };
+
+  if(isWorker && localStorage.getItem(new Date().toLocaleDateString('es')) || workerSubmitted) {
+    return (
+      <Typography variant='h4' sx={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>Has completado tu registro del día</Typography>
+    )
+  }
 
   return (
     <Box margin={4}>
@@ -185,7 +199,6 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin }) => {
                     onChange={(e) => handleChangeProcessData(e, proc.name)}
                     value={proc.confecciones_minimas}
                   />
-                  <Typography sx={{ fontSize: 10 }}>Se modificará este parámetro para todos los registros de días posteriores</Typography>
                 </Grid2>
                 <Grid2 size={{ lg: 5.4, xs: 12 }}>
                   <Typography>Confecciones realizadas</Typography>

@@ -9,6 +9,7 @@ const EditUserClothing: React.FC<Props> = ({ }) => {
   const location = useLocation();
   const userData: any = localStorage.getItem('userData')
   const { isAdmin } = JSON.parse(userData);
+  console.log(location.state.user)
 
   return (
     <EditUserClothingView

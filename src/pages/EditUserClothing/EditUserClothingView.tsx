@@ -11,12 +11,12 @@ interface User {
   workerID: string;
   nombre: string;
   apellido: string;
-  confecciones_minimas: string;
   discapacidad: string;
   fecha_nacimiento: any;
   salario_base: string;
   salario_total?: string;
-  confecciones_totales?: string;
+  process?: SelectedProcess;
+  eficiencia?: number;
 }
 
 interface Props {
@@ -38,8 +38,8 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin, isWork
   const [_, setError] = useState<string>('');
   const [baseSalary, setBaseSalary] = useState<string>(user.salario_base || '0');
   const [totalSalary, setTotalSalary] = useState<string>(user.salario_total || '0');
-  const [performance, setPerformance] = useState<number>(0);
-  const [selectedProcess, setSelectedProcess] = useState<SelectedProcess>([]);
+  const [performance, setPerformance] = useState<number>(user.eficiencia || 0);
+  const [selectedProcess, setSelectedProcess] = useState<SelectedProcess>(user.process || []);
   const [workerSubmitted, setWorkerSubmitted] = useState<boolean>(false);
   const [date, setDate] = useState<Dayjs | Date>(dayjs(new Date(dateProp.$d)));
   const [ loading, setLoading ] = useState<boolean>(false);

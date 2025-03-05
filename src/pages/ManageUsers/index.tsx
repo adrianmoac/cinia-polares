@@ -1,92 +1,74 @@
 import { useEffect, useState } from 'react';
-import ManageUsersView from './ManageUsersView';
-import { collection, getDocs, orderBy, query, startAfter, limit, where, getCountFromServer } from 'firebase/firestore';
-import { fs } from '../../firebase';
-import dayjs, { Dayjs } from 'dayjs';
+import ManageUsersView from './manageUsersView';
+import { getDatabase, ref, get, query, orderByChild, startAt, endAt, limitToFirst } from "firebase/database";
 
 type Props = {}
 
 const ManageUsers: React.FC<Props> = () => {
   const [data, setData] = useState<any[]>([]);
-  const [lastDoc, setLastDoc] = useState<any>(null);
-  const [page, setPage] = useState(0);
+  const [lastKey, setLastKey] = useState<string | null>(null);
   const [searchName, setSearchName] = useState<string>('');
-  const [searchDate, setSearchDate] = useState<Dayjs | Date>(dayjs(new Date()));
   const [docsInCache, setDocsInCache] = useState<any[]>([]);
   const [totalDocumentsNum, setTotalDocumentsNum] = useState<number>(0);
   const [totalDocumentsNumWillNotChange, setTotalDocumentsNumWillNotChange] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
-  const userData: any = localStorage.getItem('userData')
+
+  const userData: any = localStorage.getItem('userData');
   const { isAdmin } = JSON.parse(userData);
 
   const rowsPerPage = 3;
+  const db = getDatabase(); // Get Realtime Database instance
 
-  // Función para cargar datos paginados y rendimiento
-  const fetchData = async (pageChange: number, dateChange?: boolean) => {
+  // Function to fetch paginated user data
+  const fetchData = async (pageChange: number) => {
     setIsLoading(true);
 
-    // Verificar si los datos ya están en el caché
-    if (!dateChange && docsInCache[pageChange]) {
+    // Check cache first
+    if (docsInCache[pageChange]) {
       setData(docsInCache[pageChange]);
       setIsLoading(false);
       return;
     }
 
-    // Referencias a las colecciones en Firestore
-    const workersRef = collection(fs, "workers");
-
-    let qWorkers;
-
-    if (!dateChange && lastDoc) {
-      qWorkers = query(workersRef, orderBy("nombre"), startAfter(lastDoc), limit(rowsPerPage));
-    } else {
-      qWorkers = query(workersRef, orderBy("nombre"), limit(rowsPerPage));
-    }
-
     try {
-      // Obtener trabajadores
-      const workersSnapshot = await getDocs(qWorkers);
+      const usersRef = ref(db, "Users");
+      let usersQuery;
 
-      let workersData: any = [];
-
-      for (const doc of workersSnapshot.docs) {
-        const registrosRef = collection(fs, "workers", doc.id, "rendimiento");
-        const q = query(
-          registrosRef,
-          where("fecha", "==", searchDate.toISOString().split('T')[0])
-        );
-        
-        const snapshot = await getDocs(q);
-      
-        if (!snapshot.empty) {
-          snapshot.docs.forEach((rendimientoDoc) => {
-            const worker = { ...doc.data(), ...rendimientoDoc.data() };
-            workersData.push(worker); 
-          });
-        } else {
-          workersData.push(doc.data()); 
-        }
-      }
-
-      // Almacenamos los datos de la página en caché
-      let updatedCache: any[] = [];
-      if(!dateChange) {
-        updatedCache = [...docsInCache];
-      }
-      updatedCache[pageChange] = workersData;
-      setDocsInCache(updatedCache);
-
-      // Actualizamos el estado según si es una nueva página
-      if (page >= pageChange) {
-        setPage(e => e + 1);
+      if (lastKey) {
+        usersQuery = query(usersRef, orderByChild("name"), startAt(lastKey), limitToFirst(rowsPerPage + 1));
       } else {
-        setPage(e => e - 1);
+        usersQuery = query(usersRef, orderByChild("name"), limitToFirst(rowsPerPage));
       }
 
-      // Actualizamos los datos de la página actual
-      setData(workersData);
-      setLastDoc(workersSnapshot.docs[workersSnapshot.docs.length - 1]);
+      const snapshot = await get(usersQuery);
+      const usersData: any[] = [];
 
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+        let keys = Object.keys(users);
+        
+        keys.forEach((userId, index) => {
+          const user = users[userId];
+
+          usersData.push({
+            id: userId,
+            name: user.name,
+            lastName: user.lastName,
+          });
+
+          // Save last key for pagination
+          if (index === keys.length - 1) {
+            setLastKey(userId);
+          }
+        });
+
+        // Cache the data
+        let updatedCache = [...docsInCache];
+        updatedCache[pageChange] = usersData;
+        setDocsInCache(updatedCache);
+
+        setData(usersData);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -94,73 +76,57 @@ const ManageUsers: React.FC<Props> = () => {
     }
   };
 
+  // Function to search by name
   const handleSearch = async (name: string) => {
     setIsLoading(true);
-  
+
     try {
-      const workersRef = collection(fs, "workers");
-  
-      const q = query(workersRef, where("fullName", ">=", name), where("fullName", "<=", name + "\uf8ff"));
-  
-      const snapshot = await getDocs(q);
-  
-      if (!snapshot.empty) {
-        let foundWorkers: any[] = [];
-  
-        for (const doc of snapshot.docs) {
-          const registrosRef = collection(fs, "workers", doc.id, "rendimiento");
-          const q = query(
-            registrosRef,
-            where("fecha", "==", new Date(String(searchDate)).toISOString().split('T')[0])
-          );
-  
-          const rendimientoSnapshot = await getDocs(q);
-  
-          if (!rendimientoSnapshot.empty) {
-            rendimientoSnapshot.docs.forEach((rendimientoDoc) => {
-              const worker = { ...doc.data(), ...rendimientoDoc.data() };
-              foundWorkers.push(worker);
-            });
-          } else {
-            foundWorkers.push(doc.data());
-          }
+      const usersQuery = query(ref(db, "Users"), orderByChild("name"), startAt(name), endAt(name + "\uf8ff"));
+      const snapshot = await get(usersQuery);
+
+      let foundUsers: any[] = [];
+
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+
+        for (const userId in users) {
+          const user = users[userId];
+
+          foundUsers.push({
+            id: userId,
+            name: user.name,
+            lastName: user.lastName,
+          });
         }
-        setPage(0);
-        setTotalDocumentsNum(foundWorkers.length)
-        setData(foundWorkers);
+
+        setData(foundUsers);
+        setTotalDocumentsNum(foundUsers.length);
       } else {
         setData([]);
       }
-  
     } catch (error) {
       console.error("Error searching data:", error);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
+  // Function to reset search
   const handleCleanSearch = () => {
     setData(docsInCache[0]);
-    setSearchName('')
+    setSearchName('');
     setTotalDocumentsNum(totalDocumentsNumWillNotChange);
-  }
+  };
 
-  useEffect(() => {
-    // Ensure fetchData is called again when the searchDate is updated
-    const fetchDataOnDateChange = async () => {
-      setPage(0);  // Reset page to 0 when the date changes
-      await fetchData(0, true);  // Fetch new data based on the updated searchDate
-    };
-  
-    fetchDataOnDateChange();
-  }, [searchDate]);
-
+  // Fetch total documents count
   useEffect(() => {
     const fetchTotalDocsNumber = async () => {
-      const workersRef = collection(fs, "workers");
-      const countSnapshot = await getCountFromServer(workersRef);
-      setTotalDocumentsNum(countSnapshot.data().count); 
-      setTotalDocumentsNumWillNotChange(countSnapshot.data().count); 
+      const snapshot = await get(ref(db, "Users"));
+      if (snapshot.exists()) {
+        const totalUsers = Object.keys(snapshot.val()).length;
+        setTotalDocumentsNum(totalUsers);
+        setTotalDocumentsNumWillNotChange(totalUsers);
+      }
     };
 
     fetchTotalDocsNumber();
@@ -175,9 +141,7 @@ const ManageUsers: React.FC<Props> = () => {
       totalDocumentsNum={totalDocumentsNum}
       rowsPerPage={rowsPerPage}
       searchName={searchName}
-      searchDate={searchDate}
       setSearchName={setSearchName}
-      setSearchDate={setSearchDate}
       handlePageChange={fetchData}
       handleSearch={handleSearch}
       handleCleanSearch={handleCleanSearch}

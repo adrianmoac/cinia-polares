@@ -5,6 +5,7 @@ import { Gauge } from '@mui/x-charts/Gauge';
 import { fs } from '../../firebase';
 import dayjs, { Dayjs } from 'dayjs';
 import { processObj } from '../../helpers/processObj';
+import Loading from '../../helpers/loading';
 
 interface User {
   workerID: string;
@@ -41,6 +42,7 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin, isWork
   const [selectedProcess, setSelectedProcess] = useState<SelectedProcess>([]);
   const [workerSubmitted, setWorkerSubmitted] = useState<boolean>(false);
   const [date, setDate] = useState<Dayjs | Date>(dayjs(new Date(dateProp.$d)));
+  const [ loading, setLoading ] = useState<boolean>(false);
 
   const calculatePerformance = (salary: number, updatedSelectedProcess: SelectedProcess) => {
     let totalPerformance = 0;
@@ -115,6 +117,7 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin, isWork
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     const formattedDate = dayjs(date).toDate(); // Convert dayjs to a native Date object
 
     const docRef = doc(fs, 'workers', user.workerID, 'rendimiento', formattedDate.toISOString().split('T')[0]);
@@ -139,6 +142,7 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin, isWork
       localStorage.setItem(new Date().toLocaleDateString('es'), 'true')
       setWorkerSubmitted(true);
     }
+    setLoading(false);
   };
 
   if(isWorker && localStorage.getItem(new Date().toLocaleDateString('es')) || workerSubmitted) {
@@ -149,6 +153,9 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin, isWork
 
   return (
     <Box margin={4}>
+      {loading &&
+        <Loading />
+      }
       <Typography variant="h5">
         {user.nombre + ' ' + user.apellido}
       </Typography>
@@ -214,10 +221,10 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin, isWork
             </Box>
           ))}
           <Box sx={{ display: 'flex', marginTop: 5, marginLeft: 'auto', marginRight: 0, height: 40 }} gap={2}>
-            <Button variant="outlined" onClick={() => window.location.href = 'Inicio'}>
+            <Button variant="outlined" onClick={() => window.location.href = 'Inicio'} disabled={loading}>
               Cancelar
             </Button>
-            <Button variant="contained" onClick={handleSubmit} disabled={selectedProcess.length === 0}>
+            <Button variant="contained" onClick={handleSubmit} disabled={selectedProcess.length === 0 || loading}>
               Aceptar
             </Button>
           </Box>

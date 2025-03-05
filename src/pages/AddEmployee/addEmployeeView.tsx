@@ -5,6 +5,7 @@ import { auth, fs } from '../../firebase';
 import Datepicker from '../../helpers/datepicker';
 import dayjs from 'dayjs';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import Loading from '../../helpers/loading';
 
 type Props = {}
 
@@ -22,9 +23,12 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
   const [ confPassword, setConfPassword ] = useState<string>('');
   const [ emailError, setEmailError ] = useState<boolean>(false);
   const [ passwordError, setPasswordError ] = useState<boolean>(false);
+  const [ confPasswordError, setConfPasswordError ] = useState<boolean>(false);
   const [ salary, setSalary ] = useState<string>('');
+  const [ loading, setLoading ] = useState<boolean>(false);
 
   const handleCreateEmployee = async () => {
+    setLoading(true);
     if(validateForm()) {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -46,9 +50,10 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
 
       } catch (error) {
         console.error('Error creating admin:', error);
-        setError('Error al crear el administrador. Verifique los datos e intente nuevamente.');
+        setError('Error al crear el empleado. Verifique los datos e intente nuevamente.');
       }
     } 
+    setLoading(false);
   }
 
   const validateForm = () => {
@@ -80,10 +85,10 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
     } else if (!email) {
       setError('Ingresa el correo del empleado');
       valid = false;
-    } else if (!password) {
+    } else if (!password || passwordError) {
       setError('Ingresa la contraseña del usuario');
       valid = false;
-    } else if (!confPassword) {
+    } else if (!confPassword || confPasswordError) {
       setError('Confirma la contraseña del usuario');
       valid = false;
     }
@@ -108,14 +113,19 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         setSubarea(value);
       } else if(name === 'password') {
         setPassword(value);
-      } else if(name === 'confPassword') {
-        if(password !== value) {
+        if(value.length < 6) {
           setPasswordError(true);
         } else {
-          setPasswordError(false)
+          setPasswordError(false);
+        }
+      } else if(name === 'confPassword') {
+        if(password !== value) {
+          setConfPasswordError(true);
+        } else {
+          setConfPasswordError(false)
         }
         setConfPassword(value);
-      }else if(name === 'email') {
+      } else if(name === 'email') {
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         setEmailError(!regex.test(value))
         setEmail(value);
@@ -139,7 +149,10 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
       {error &&
         <Alert severity="error" sx={{ position: 'absolute', zIndex: 50, right: 40 }}>{error}</Alert>
       }
-      <Typography variant='h5'>Agregar colaborador</Typography>
+      {loading &&
+        <Loading />
+      }
+      <Typography variant='h5'>Agregar empleado</Typography>
       <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
         <Grid2 size={{ lg: 5.8, xs: 12}}>
           <Typography>Nombre</Typography>
@@ -194,7 +207,15 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
         </Grid2>
         <Grid2 size={{ lg: 5.8, xs: 12}}>
           <Typography>Contraseña</Typography>
-          <TextField name="password" type='password' size='small' fullWidth onChange={handleChange} value={password}></TextField>
+          <TextField 
+          name="password" 
+          type='password' 
+          size='small' 
+          fullWidth 
+          onChange={handleChange} 
+          error={passwordError}
+          helperText={passwordError ? 'La contaseña debe de tener mínimo 6 caracteres.' : ''}
+          value={password}></TextField>
         </Grid2>
       </Grid2>
       <Grid2 container display={'flex'} flexDirection={'row'} gap={5} sx={{ width: '100%', marginTop: 5, justifyContent: 'space-between' }}>
@@ -206,14 +227,14 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
           size='small' 
           fullWidth 
           onChange={handleChange} 
-          error={passwordError}
-          helperText={passwordError ? 'Las contraseñas no coinciden.' : ''}
+          error={confPasswordError}
+          helperText={confPasswordError ? 'Las contraseñas no coinciden.' : ''}
           value={confPassword}></TextField>
         </Grid2>
       </Grid2>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 5 }} gap={2}>
-        <Button variant='outlined' onClick={() => window.location.href = 'Inicio'}>Cancelar</Button>
-        <Button variant='contained' onClick={() => handleCreateEmployee()}>Aceptar</Button>
+        <Button variant='outlined' disabled={loading} onClick={() => window.location.href = 'Inicio'}>Cancelar</Button>
+        <Button variant='contained' disabled={loading} onClick={() => handleCreateEmployee()}>Aceptar</Button>
       </Box>
     </Box>
   )

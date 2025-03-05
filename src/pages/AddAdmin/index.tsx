@@ -44,6 +44,7 @@ const AddAdmin = () => {
   };
 
   const [error, setError] = useState<string>('');
+  const [ loading, setLoading ] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdminData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
@@ -85,7 +86,9 @@ const AddAdmin = () => {
   
 
   const handleAddAdmin = async () => {
+    setLoading(true);
     if (!validateForm()) {
+      setLoading(false);
       return;
     }
     
@@ -103,10 +106,12 @@ const AddAdmin = () => {
         isAdmin: adminData.isAdmin,
       });
       
+      window.location.href = '/Inicio';
     } catch (error) {
       console.error('Error creating admin:', error);
       setError('Error al crear el administrador. Verifique los datos e intente nuevamente.');
     }
+    setLoading(false);
   };
   
   return (
@@ -116,6 +121,7 @@ const AddAdmin = () => {
       handleDateChange={handleDateChange}
       handleAddAdmin={handleAddAdmin}
       handleCheckboxChange={handleCheckboxChange}
+      loading={loading}
       error={error}
       formErrors={formErrors}
     />

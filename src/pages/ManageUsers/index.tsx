@@ -7,6 +7,7 @@ type Props = {}
 const ManageUsers: React.FC<Props> = () => {
   const [data, setData] = useState<any[]>([]);
   const [lastKey, setLastKey] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
   const [searchName, setSearchName] = useState<string>('');
   const [docsInCache, setDocsInCache] = useState<any[]>([]);
   const [totalDocumentsNum, setTotalDocumentsNum] = useState<number>(0);
@@ -45,6 +46,7 @@ const ManageUsers: React.FC<Props> = () => {
 
       if (snapshot.exists()) {
         const users = snapshot.val();
+        console.log(users);
         let keys = Object.keys(users);
         
         keys.forEach((userId, index) => {
@@ -58,15 +60,24 @@ const ManageUsers: React.FC<Props> = () => {
 
           // Save last key for pagination
           if (index === keys.length - 1) {
-            setLastKey(userId);
+            setLastKey(userId); // Update the last key here
           }
         });
 
         // Cache the data
-        let updatedCache = [...docsInCache];
+        let updatedCache: any[] = [];
+        updatedCache = [...docsInCache];
         updatedCache[pageChange] = usersData;
+        
         setDocsInCache(updatedCache);
 
+        if (page >= pageChange) {
+          setPage(e => e + 1);
+        } else {
+          setPage(e => e - 1);
+        }
+  
+        // Actualizamos los datos de la página actual
         setData(usersData);
       }
     } catch (error) {
@@ -75,6 +86,8 @@ const ManageUsers: React.FC<Props> = () => {
       setIsLoading(false);
     }
   };
+
+console.log("cache", docsInCache);
 
   // Function to search by name
   const handleSearch = async (name: string) => {

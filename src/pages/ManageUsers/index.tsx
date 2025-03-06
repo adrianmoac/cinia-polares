@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ManageUsersView from './manageUsersView';
-import { getDatabase, ref, get, query, orderByChild, startAt, endAt, limitToFirst } from "firebase/database";
+import { getDatabase, ref, get, query, orderByChild, startAt, endAt, limitToFirst, remove } from "firebase/database";
 
 type Props = {}
 
@@ -87,7 +87,17 @@ const ManageUsers: React.FC<Props> = () => {
     }
   };
 
-console.log("cache", docsInCache);
+  const handleDeleteUser = async (userId: string) => {
+    setIsLoading(true);
+    try {
+      await remove(ref(db, `Users/${userId}`));
+      setData(prevData => prevData.filter(user => user.id !== userId));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Function to search by name
   const handleSearch = async (name: string) => {
@@ -158,6 +168,7 @@ console.log("cache", docsInCache);
       handlePageChange={fetchData}
       handleSearch={handleSearch}
       handleCleanSearch={handleCleanSearch}
+      handleDeleteUser={handleDeleteUser}
     />
   );
 };

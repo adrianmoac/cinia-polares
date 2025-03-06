@@ -15,6 +15,7 @@ interface Props {
   handlePageChange: (page: number) => void;
   handleSearch: (name: string) => void;
   handleCleanSearch: () => void;
+  handleDeleteUser: (id: string) => void;
 }
 
 const ODD_OPACITY = 0.2;
@@ -62,6 +63,7 @@ const ManageUsersView: React.FC<Props> = ({
   handlePageChange,
   handleSearch,
   handleCleanSearch,
+  handleDeleteUser,
 }) => {
   const columns: any[] = [
     { field: 'name', headerName: 'Nombre', flex: 1 },
@@ -71,10 +73,12 @@ const ManageUsersView: React.FC<Props> = ({
       headerName: ' ',
       sortable: false,
       width: 60,
-      renderCell: (_: any) => (
+      renderCell: (params: any) => (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '5px' }}>
           <Tooltip title="Borrar empleado">
-            <IconButton>
+            <IconButton onClick={() => {
+              console.log("Loco", params.row.id);
+              handleDeleteUser(params.row.id)}}>
               <Delete />
             </IconButton>
           </Tooltip>
@@ -101,11 +105,12 @@ const ManageUsersView: React.FC<Props> = ({
           <Box display={'flex'} flexDirection={'row'} gap={5} justifyContent={'flex-end'}>
             <Box display={'flex'} width={'60%'}>
               <TextField
+                type="text"
                 size="small"
                 placeholder="Buscar por nombre"
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
-                sx={{ width: 450 }}
+                sx={{ width: 700 }}
               />
               <Button variant="outlined" onClick={() => handleSearch(searchName)} sx={{ paddingX: 5 }}>
                 Buscar

@@ -139,13 +139,13 @@ const EditUserClothingView: React.FC<Props> = ({ user, dateProp, isAdmin, isWork
       window.location.href = '/Inicio';
     } else {
       localStorage.clear();
-      localStorage.setItem(new Date().toLocaleDateString('es'), 'true')
+      localStorage.setItem(new Date().toLocaleDateString('es') + user.workerID, 'true')
       setWorkerSubmitted(true);
     }
     setLoading(false);
   };
 
-  if(isWorker && localStorage.getItem(new Date().toLocaleDateString('es')) || workerSubmitted) {
+  if(isWorker && localStorage.getItem(new Date().toLocaleDateString('es') + user.workerID) || workerSubmitted) {
     return (
       <Typography variant='h4' sx={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>Has completado tu registro del día</Typography>
     )

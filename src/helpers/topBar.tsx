@@ -42,7 +42,6 @@ const TopBar: React.FC<Props> = ({ children }) => {
             aria-label="primary tabs example"
           >
             <Tab value="Inicio" label="Inicio" />
-            <Tab value="Eficiencia" label="Eficiencia" />
           </Tabs>
         }
         <Typography

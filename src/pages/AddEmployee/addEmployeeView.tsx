@@ -44,6 +44,7 @@ const AddEmployeeView: React.FC<Props> = ({ }) => {
           area: area,
           subarea: subarea,
           numero_empleado: employeeNumber,
+          fullName: name + ' ' + lastname,
           workerID: userId
         });
         window.location.href = 'Inicio';

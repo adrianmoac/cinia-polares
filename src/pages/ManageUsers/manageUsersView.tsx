@@ -76,9 +76,7 @@ const ManageUsersView: React.FC<Props> = ({
       renderCell: (params: any) => (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '5px' }}>
           <Tooltip title="Borrar empleado">
-            <IconButton onClick={() => {
-              console.log("Loco", params.row.id);
-              handleDeleteUser(params.row.id)}}>
+            <IconButton onClick={() => handleDeleteUser(params.row.id)}>
               <Delete />
             </IconButton>
           </Tooltip>

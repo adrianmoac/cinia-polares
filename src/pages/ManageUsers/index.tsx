@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import ManageUsersView from './manageUsersView';
 import { getDatabase, ref, get, query, orderByChild, startAt, endAt, limitToFirst, remove } from "firebase/database";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography } from '@mui/material';
 
 type Props = {}
 
@@ -13,6 +14,8 @@ const ManageUsers: React.FC<Props> = () => {
   const [totalDocumentsNum, setTotalDocumentsNum] = useState<number>(0);
   const [totalDocumentsNumWillNotChange, setTotalDocumentsNumWillNotChange] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false); // State for modal visibility
+  const [userToDelete, setUserToDelete] = useState<string | null>(null); // User ID to delete
 
   const userData: any = localStorage.getItem('userData');
   const { isAdmin } = JSON.parse(userData);
@@ -95,13 +98,29 @@ const ManageUsers: React.FC<Props> = () => {
   
       // Remove from local state
       setData(prevData => prevData.filter(user => user.id !== userId));
+      setOpenModal(false); // Close the modal after successful deletion
     } catch (error) {
       console.error("Error deleting user:", error);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
+  // Function to handle the delete button click
+  const openDeleteModal = (userId: string) => {
+    setUserToDelete(userId); // Set the user ID to be deleted
+    setOpenModal(true); // Show the confirmation modal
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false); // Close the modal
+  };
+
+  const handleModalConfirm = () => {
+    if (userToDelete) {
+      handleDeleteUser(userToDelete); // Confirm and delete the user
+    }
+  };
 
   // Function to search by name
   const handleSearch = async (name: string) => {
@@ -161,19 +180,43 @@ const ManageUsers: React.FC<Props> = () => {
   }, []);
 
   return (
-    <ManageUsersView
-      data={data}
-      loading={isLoading}
-      isAdmin={isAdmin}
-      totalDocumentsNum={totalDocumentsNum}
-      rowsPerPage={rowsPerPage}
-      searchName={searchName}
-      setSearchName={setSearchName}
-      handlePageChange={fetchData}
-      handleSearch={handleSearch}
-      handleCleanSearch={handleCleanSearch}
-      handleDeleteUser={handleDeleteUser}
-    />
+    <>
+      <ManageUsersView
+        data={data}
+        loading={isLoading}
+        isAdmin={isAdmin}
+        totalDocumentsNum={totalDocumentsNum}
+        rowsPerPage={rowsPerPage}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        handlePageChange={fetchData}
+        handleSearch={handleSearch}
+        handleCleanSearch={handleCleanSearch}
+        handleDeleteUser={openDeleteModal} // Pass openDeleteModal to trigger modal
+      />
+
+      {/* Confirmation Modal */}
+      <Dialog open={openModal} onClose={handleModalClose}>
+        <DialogTitle>
+          <Typography variant="h6" component="h2">
+            Confirmación de Eliminación
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            ¿Estás seguro de que deseas eliminar este usuario?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleModalConfirm} color="secondary">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

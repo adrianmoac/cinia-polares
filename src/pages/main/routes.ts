@@ -41,3 +41,16 @@ export const loggedRoutes = [
     component: HomeWrapper
   }
 ]
+
+export const workerRoutes = [
+  {
+    route: 'RegistrarRendimiento',
+    name: 'Registrar rendimiento',
+    component: EditUserClothing
+  },
+  {
+    route: '*',
+    name: 'all',
+    component: EditUserClothing
+  }
+]

@@ -45,6 +45,7 @@ const AddAdmin = () => {
   };
 
   const [error, setError] = useState<string>('');
+  const [ loading, setLoading ] = useState<boolean>(false);
   const [success, setSuccess] = useState<string>("");
 
   const navigate = useNavigate(); 
@@ -88,10 +89,12 @@ const AddAdmin = () => {
   };
 
   const handleAddAdmin = async () => {
+    setLoading(true);
     setError("");
     setSuccess(""); 
   
     if (!validateForm()) {
+      setLoading(false);
       return;
     }
   
@@ -119,6 +122,7 @@ const AddAdmin = () => {
       console.error("Error creating admin:", error);
       setError("Error al crear usuario. Verifique los datos e intente nuevamente.");
     }
+    setLoading(false);
   };
   
   return (
@@ -128,6 +132,7 @@ const AddAdmin = () => {
       handleDateChange={handleDateChange}
       handleAddAdmin={handleAddAdmin}
       handleCheckboxChange={handleCheckboxChange}
+      loading={loading}
       error={error}
       success={success}
       formErrors={formErrors}

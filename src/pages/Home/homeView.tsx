@@ -64,17 +64,18 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocum
   const navigate = useNavigate();
 
   const columns: any[] = [
+    { field: 'numero_empleado', headerName: '# Empleado', width: 150 },
     { field: 'nombre', headerName: 'Nombre', width: 100 },
     { field: 'apellido', headerName: 'Apellido', width: 150 },
-    { field: 'confecciones_minimas', headerName: 'Confecciones mínimas', width: 200 },
-    { field: 'confecciones_totales', headerName: 'Confecciones realizadas', width: 200, renderCell: (row: any) => row.row.confecciones_totales ? row.row.confecciones_totales : 'No asignado' },
+    { field: 'area', headerName: 'Área', width: 150 },
+    { field: 'subarea', headerName: 'Subárea', width: 150 },
     isAdmin && { field: 'salario_base', headerName: 'Salario base ($)', width: 130 },
-    isAdmin && { field: 'salario_total', headerName: 'Salario total ($)', width: 130, flex: 1, renderCell: (row: any) => row.row.salario_total ? row.row.salario_total : 'No asignado' },
+    isAdmin && { field: 'salario_total', headerName: 'Salario total ($)', width: 130, flex: 1, renderCell: (row: any) => row.row.salario_total ? row.row.salario_total : 'No calculado' },
     { field: 'eficiencia', 
       headerName: 'Eficiencia (%)', 
       width: 120,
       flex: 1, 
-      renderCell: (row: any) => row.row.confecciones_totales ? Math.floor(Number(row.row.confecciones_totales) * 100 / Number(row.row.confecciones_minimas)) : 'No asignado' },
+      renderCell: (row: any) => row.row.eficiencia ? row.row.eficiencia : 'No calculado' },
     {
       field: ' ',
       headerName: ' ',

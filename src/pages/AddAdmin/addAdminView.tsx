@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, Box, Button, Checkbox, FormControlLabel, Grid2, TextField, Typography, FormHelperText } from '@mui/material';
 import Datepicker from '../../helpers/datepicker';
 import dayjs from 'dayjs';
+import Loading from '../../helpers/loading';
 
 interface AdminData {
   name: string;
@@ -20,6 +21,7 @@ interface AddAdminViewProps {
   handleDateChange: (e: any) => void;
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: string;
+  loading: boolean;
   success: string;
   formErrors: {
     name: boolean;
@@ -37,6 +39,7 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({
   handleAddAdmin,
   handleDateChange,
   handleCheckboxChange,
+  loading,
   error,
   success,
 }) => {
@@ -47,6 +50,9 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({
           {error}
         </Alert>
       )}
+      {loading &&
+        <Loading />
+      }
 
       {success && (
         <Alert severity="success" sx={{ position: 'absolute', zIndex: 50, right: 40 }}>
@@ -138,10 +144,10 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 5 }} gap={2}>
-        <Button variant="outlined" onClick={() => (window.location.href = 'Inicio')}>
+        <Button disabled={loading} variant="outlined" onClick={() => (window.location.href = 'Inicio')}>
           Cancelar
         </Button>
-        <Button variant="contained" onClick={handleAddAdmin}>
+        <Button disabled={loading} variant="contained" onClick={handleAddAdmin}>
           Aceptar
         </Button>
       </Box>

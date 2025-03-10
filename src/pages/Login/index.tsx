@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, TextField, Typography } from '@mui/material'
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase'
 import image from '../../assets/ciniaSinFondo.png'
@@ -9,9 +9,11 @@ interface Props {}
 const Login: React.FC<Props> = () => {
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
 
   const onSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
 
     try {
@@ -20,12 +22,14 @@ const Login: React.FC<Props> = () => {
 
       localStorage.setItem('token', user.uid);
 
-      window.location.href = '/Inicio';
+      window.location.href = '/Login';
     } catch (error) {
       console.log('Error during login:', error);
       setError('Login failed. Please check your credentials.');
     }
+    setLoading(false);
   };
+
 
   return (
 <div style={{ display: "flex", height: "100vh", alignItems: "center" }}>
@@ -51,7 +55,7 @@ const Login: React.FC<Props> = () => {
       marginX: "auto"
     }}
   >
-    <Typography fontWeight={"semibold"} sx={{ textAlign: 'center' }} fontSize={25} marginTop={20} marginBottom={3}>
+    <Typography fontWeight={"semibold"} sx={{ textAlign: 'center' }} fontSize={25} marginTop={'10vh'} marginBottom={3}>
       CINIA Polares
     </Typography>
     <Typography>Ingresa el correo</Typography>
@@ -79,11 +83,17 @@ const Login: React.FC<Props> = () => {
           type="submit"
           variant="contained"
           onClick={onSubmit}
+          disabled={loading}
         >
           Continuar
         </Button>
       </div>
     </form>
+    {loading &&
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
+        <CircularProgress  />
+      </div>
+    }
 
     {error && <Typography color="error">{error}</Typography>}
   </Box>

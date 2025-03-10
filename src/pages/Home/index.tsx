@@ -22,7 +22,7 @@ const HomeWrapper: React.FC<Props> = () => {
   const userData: any = localStorage.getItem('userData');
   const { isAdmin } = JSON.parse(userData);
 
-  const rowsPerPage = 3;
+  const rowsPerPage = 10;
 
   // Función para cargar datos paginados y rendimiento
   const fetchData = async (pageChange: number, dateChange?: boolean) => {
@@ -99,18 +99,7 @@ const HomeWrapper: React.FC<Props> = () => {
         // Close the delete modal
         setOpenDeleteModal(false);
   
-        // Remove the deleted worker from cache
-        const updatedCache = [...docsInCache];
-        const pageIndex = Math.floor(page / rowsPerPage); // Get the current page index
-  
-        // Ensure the page data exists before filtering
-        if (updatedCache[pageIndex]) {
-          updatedCache[pageIndex] = updatedCache[pageIndex].filter((worker: { workerID: string }) => worker.workerID !== workerToDelete);
-          setDocsInCache(updatedCache);
-        }
-  
-        // Refresh data after deletion (reload data)
-        fetchData(0);  // This will trigger the data reload after deletion
+        window.location.href = '/Inicio';
   
       } catch (error) {
         console.error("Error deleting worker:", error);

@@ -49,7 +49,6 @@ const ManageUsers: React.FC<Props> = () => {
 
       if (snapshot.exists()) {
         const users = snapshot.val();
-        console.log(users);
         let keys = Object.keys(users);
         
         keys.forEach((userId, index) => {

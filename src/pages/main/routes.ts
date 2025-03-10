@@ -1,5 +1,6 @@
 import AddEmployee from "../AddEmployee";
 import AddAdmin from "../AddAdmin";
+import ManageUsers from "../ManageUsers";
 import EditUserClothing from "../EditUserClothing";
 import HomeWrapper from "../Home";
 
@@ -20,8 +21,13 @@ export const loggedRoutes = [
     component: AddEmployee
   },
   {
-    route: 'AgregarAdministrador',
-    name: 'Agregar administrador',
+    route: 'AdministrarUsuarios',
+    name: 'Administrar usuarios',
+    component: ManageUsers
+  },
+  {
+    route: 'CrearAdministrador',
+    name: 'Crear administrador',
     component: AddAdmin
   },
   {

@@ -3,6 +3,7 @@ import { db, auth } from '../../firebase';
 import { ref, set } from 'firebase/database';
 import { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';  
 
 type AdminData = {
   name: string;
@@ -45,6 +46,9 @@ const AddAdmin = () => {
 
   const [error, setError] = useState<string>('');
   const [ loading, setLoading ] = useState<boolean>(false);
+  const [success, setSuccess] = useState<string>("");
+
+  const navigate = useNavigate(); 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdminData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
@@ -83,21 +87,23 @@ const AddAdmin = () => {
   
     return true;
   };
-  
 
   const handleAddAdmin = async () => {
     setLoading(true);
+    setError("");
+    setSuccess(""); 
+  
     if (!validateForm()) {
       setLoading(false);
       return;
     }
-    
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, adminData.email, adminData.password);
       const userId = userCredential.user.uid;
-      
+  
       const adminRef = ref(db, `Users/${userId}`);
-      
+  
       await set(adminRef, {
         name: adminData.name,
         lastName: adminData.lastName,
@@ -105,11 +111,16 @@ const AddAdmin = () => {
         birthDate: new Date(adminData.birthDate || Date.now()).toLocaleDateString('es-ES'),
         isAdmin: adminData.isAdmin,
       });
-      
-      window.location.href = '/Inicio';
+  
+      setSuccess("Usuario creado correctamente"); 
+
+      setTimeout(() => {
+        navigate('/'); 
+      }, 2000);
+
     } catch (error) {
-      console.error('Error creating admin:', error);
-      setError('Error al crear el administrador. Verifique los datos e intente nuevamente.');
+      console.error("Error creating admin:", error);
+      setError("Error al crear usuario. Verifique los datos e intente nuevamente.");
     }
     setLoading(false);
   };
@@ -123,6 +134,7 @@ const AddAdmin = () => {
       handleCheckboxChange={handleCheckboxChange}
       loading={loading}
       error={error}
+      success={success}
       formErrors={formErrors}
     />
   );

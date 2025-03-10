@@ -89,8 +89,11 @@ const ManageUsers: React.FC<Props> = () => {
 
   const handleDeleteUser = async (userId: string) => {
     setIsLoading(true);
-    try {
+    try {  
+      // Delete user from Realtime Database
       await remove(ref(db, `Users/${userId}`));
+  
+      // Remove from local state
       setData(prevData => prevData.filter(user => user.id !== userId));
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -98,6 +101,7 @@ const ManageUsers: React.FC<Props> = () => {
       setIsLoading(false);
     }
   };
+  
 
   // Function to search by name
   const handleSearch = async (name: string) => {

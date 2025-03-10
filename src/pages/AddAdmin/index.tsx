@@ -3,6 +3,7 @@ import { db, auth } from '../../firebase';
 import { ref, set } from 'firebase/database';
 import { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';  
 
 type AdminData = {
   name: string;
@@ -44,6 +45,9 @@ const AddAdmin = () => {
   };
 
   const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>("");
+
+  const navigate = useNavigate(); 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdminData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
@@ -82,19 +86,21 @@ const AddAdmin = () => {
   
     return true;
   };
-  
 
   const handleAddAdmin = async () => {
+    setError("");
+    setSuccess(""); 
+  
     if (!validateForm()) {
       return;
     }
-    
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, adminData.email, adminData.password);
       const userId = userCredential.user.uid;
-      
+  
       const adminRef = ref(db, `Users/${userId}`);
-      
+  
       await set(adminRef, {
         name: adminData.name,
         lastName: adminData.lastName,
@@ -102,10 +108,16 @@ const AddAdmin = () => {
         birthDate: new Date(adminData.birthDate || Date.now()).toLocaleDateString('es-ES'),
         isAdmin: adminData.isAdmin,
       });
-      
+  
+      setSuccess("Usuario creado correctamente"); 
+
+      setTimeout(() => {
+        navigate('/'); 
+      }, 2000);
+
     } catch (error) {
-      console.error('Error creating admin:', error);
-      setError('Error al crear el administrador. Verifique los datos e intente nuevamente.');
+      console.error("Error creating admin:", error);
+      setError("Error al crear usuario. Verifique los datos e intente nuevamente.");
     }
   };
   
@@ -117,6 +129,7 @@ const AddAdmin = () => {
       handleAddAdmin={handleAddAdmin}
       handleCheckboxChange={handleCheckboxChange}
       error={error}
+      success={success}
       formErrors={formErrors}
     />
   );

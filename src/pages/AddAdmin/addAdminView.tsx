@@ -20,6 +20,7 @@ interface AddAdminViewProps {
   handleDateChange: (e: any) => void;
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: string;
+  success: string;
   formErrors: {
     name: boolean;
     lastName: boolean;
@@ -37,6 +38,7 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({
   handleDateChange,
   handleCheckboxChange,
   error,
+  success,
 }) => {
   return (
     <Box margin={4}>
@@ -45,6 +47,13 @@ const AddAdminView: React.FC<AddAdminViewProps> = ({
           {error}
         </Alert>
       )}
+
+      {success && (
+        <Alert severity="success" sx={{ position: 'absolute', zIndex: 50, right: 40 }}>
+          {success}
+        </Alert>
+      )}
+
       <Typography variant="h5">Agregar usuario</Typography>
 
       <Grid2 container spacing={5} sx={{ marginTop: 5 }}>

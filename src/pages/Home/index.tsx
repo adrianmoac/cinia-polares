@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import HomeView from './homeView';
-import { collection, getDocs, orderBy, query, startAfter, limit, where, getCountFromServer } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, startAfter, limit, where, getCountFromServer, deleteDoc, doc } from 'firebase/firestore';
 import { fs } from '../../firebase';
 import dayjs, { Dayjs } from 'dayjs';
+import { Dialog, Button, Typography, DialogTitle, DialogActions, DialogContent } from '@mui/material';
 
 type Props = {}
 
@@ -16,7 +17,9 @@ const HomeWrapper: React.FC<Props> = () => {
   const [totalDocumentsNum, setTotalDocumentsNum] = useState<number>(0);
   const [totalDocumentsNumWillNotChange, setTotalDocumentsNumWillNotChange] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
-  const userData: any = localStorage.getItem('userData')
+  const [openDeleteModal, setOpenDeleteModal] = useState(false); // Modal open state
+  const [workerToDelete, setWorkerToDelete] = useState<string | null>(null); // Store worker ID to delete
+  const userData: any = localStorage.getItem('userData');
   const { isAdmin } = JSON.parse(userData);
 
   const rowsPerPage = 3;
@@ -25,16 +28,13 @@ const HomeWrapper: React.FC<Props> = () => {
   const fetchData = async (pageChange: number, dateChange?: boolean) => {
     setIsLoading(true);
 
-    // Verificar si los datos ya están en el caché
     if (!dateChange && docsInCache[pageChange]) {
       setData(docsInCache[pageChange]);
       setIsLoading(false);
       return;
     }
 
-    // Referencias a las colecciones en Firestore
     const workersRef = collection(fs, "workers");
-
     let qWorkers;
 
     if (!dateChange && lastDoc) {
@@ -44,9 +44,7 @@ const HomeWrapper: React.FC<Props> = () => {
     }
 
     try {
-      // Obtener trabajadores
       const workersSnapshot = await getDocs(qWorkers);
-
       let workersData: any = [];
 
       for (const doc of workersSnapshot.docs) {
@@ -68,22 +66,19 @@ const HomeWrapper: React.FC<Props> = () => {
         }
       }
 
-      // Almacenamos los datos de la página en caché
       let updatedCache: any[] = [];
-      if(!dateChange) {
+      if (!dateChange) {
         updatedCache = [...docsInCache];
       }
       updatedCache[pageChange] = workersData;
       setDocsInCache(updatedCache);
 
-      // Actualizamos el estado según si es una nueva página
       if (page >= pageChange) {
         setPage(e => e + 1);
       } else {
         setPage(e => e - 1);
       }
 
-      // Actualizamos los datos de la página actual
       setData(workersData);
       setLastDoc(workersSnapshot.docs[workersSnapshot.docs.length - 1]);
 
@@ -94,6 +89,35 @@ const HomeWrapper: React.FC<Props> = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (workerToDelete) {
+      const workerRef = doc(fs, "workers", workerToDelete);
+      try {
+        // Delete the worker
+        await deleteDoc(workerRef);
+  
+        // Close the delete modal
+        setOpenDeleteModal(false);
+  
+        // Remove the deleted worker from cache
+        const updatedCache = [...docsInCache];
+        const pageIndex = Math.floor(page / rowsPerPage); // Get the current page index
+  
+        // Ensure the page data exists before filtering
+        if (updatedCache[pageIndex]) {
+          updatedCache[pageIndex] = updatedCache[pageIndex].filter((worker: { workerID: string }) => worker.workerID !== workerToDelete);
+          setDocsInCache(updatedCache);
+        }
+  
+        // Refresh data after deletion (reload data)
+        fetchData(0);  // This will trigger the data reload after deletion
+  
+      } catch (error) {
+        console.error("Error deleting worker:", error);
+      }
+    }
+  };
+  
   const handleSearch = async (name: string) => {
     setIsLoading(true);
   
@@ -138,18 +162,17 @@ const HomeWrapper: React.FC<Props> = () => {
       setIsLoading(false);
     }
   };
-  
+
   const handleCleanSearch = () => {
     setData(docsInCache[0]);
     setSearchName('')
     setTotalDocumentsNum(totalDocumentsNumWillNotChange);
-  }
+  };
 
   useEffect(() => {
-    // Ensure fetchData is called again when the searchDate is updated
     const fetchDataOnDateChange = async () => {
-      setPage(0);  // Reset page to 0 when the date changes
-      await fetchData(0, true);  // Fetch new data based on the updated searchDate
+      setPage(0);
+      await fetchData(0, true);
     };
   
     fetchDataOnDateChange();
@@ -168,20 +191,45 @@ const HomeWrapper: React.FC<Props> = () => {
   }, []);
 
   return (
-    <HomeView
-      data={data}
-      loading={isLoading}
-      isAdmin={isAdmin}
-      totalDocumentsNum={totalDocumentsNum}
-      rowsPerPage={rowsPerPage}
-      searchName={searchName}
-      searchDate={searchDate}
-      setSearchName={setSearchName}
-      setSearchDate={setSearchDate}
-      handlePageChange={fetchData}
-      handleSearch={handleSearch}
-      handleCleanSearch={handleCleanSearch}
-    />
+    <>
+      <HomeView
+        data={data}
+        loading={isLoading}
+        isAdmin={isAdmin}
+        totalDocumentsNum={totalDocumentsNum}
+        rowsPerPage={rowsPerPage}
+        searchName={searchName}
+        searchDate={searchDate}
+        setSearchName={setSearchName}
+        setSearchDate={setSearchDate}
+        handlePageChange={fetchData}
+        handleSearch={handleSearch}
+        handleCleanSearch={handleCleanSearch}
+        setOpenDeleteModal={setOpenDeleteModal}
+        setWorkerToDelete={setWorkerToDelete}
+      />
+      
+      <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+      <DialogTitle>
+          <Typography variant="h6" component="h2">
+            Confirmación de Eliminación
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            ¿Estás seguro de que deseas eliminar este usuario?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteModal(false)} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} color="secondary">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

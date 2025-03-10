@@ -21,6 +21,8 @@ interface Props {
   handlePageChange: (page: number) => {};
   handleSearch: (name: string) => {};
   handleCleanSearch: () => void;
+  setOpenDeleteModal: (open: boolean) => void;
+  setWorkerToDelete: (workerId: string | null) => void;
 }
 
 const ODD_OPACITY = 0.2;
@@ -57,10 +59,7 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-
-
-
-const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocumentsNum, rowsPerPage, searchName, searchDate, setSearchName, setSearchDate, handlePageChange, handleSearch, handleCleanSearch }) => {
+const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocumentsNum, rowsPerPage, searchName, searchDate, setSearchName, setSearchDate, handlePageChange, handleSearch, handleCleanSearch, setOpenDeleteModal, setWorkerToDelete }) => {
   const navigate = useNavigate();
 
   const columns: any[] = [
@@ -96,10 +95,13 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocum
       headerName: ' ',
       sortable: false,
       width: 60,
-      renderCell: (_: any) => (
+      renderCell: (row: any) => (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '5px' }}>
             <Tooltip title="Borrar empleado">
-              <IconButton>
+              <IconButton onClick={() => {
+                setWorkerToDelete(row.row.workerID); // Set worker ID to delete
+                setOpenDeleteModal(true); // Open modal for deletion confirmation
+              }}>
                 <Delete />
               </IconButton>
             </Tooltip>
@@ -156,4 +158,4 @@ const HomeView: React.FC<Props> = ({ loading, data: rowData, isAdmin, totalDocum
   )
 }
 
-export default HomeView
+export default HomeView;
